@@ -1,0 +1,81 @@
+@startuml
+' Configuration
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+title Task Management Database Schema
+
+entity "users" as users {
+  +id : SERIAL [PK]
+  --
+  name : TEXT
+  email : TEXT [UNIQUE]
+  password : TEXT
+  created_at : TIMESTAMP
+}
+
+entity "projects" as projects {
+  +id : SERIAL [PK]
+  --
+  name : TEXT
+  description : TEXT
+  start_date : DATE
+  end_date : DATE
+  created_by : INTEGER [FK → users.id]
+  created_at : TIMESTAMP
+}
+
+entity "project_members" as project_members {
+  +id : SERIAL [PK]
+  --
+  project_id : INTEGER [FK → projects.id]
+  user_id : INTEGER [FK → users.id]
+  role : VARCHAR(20)
+  joined_at : TIMESTAMP
+  UNIQUE (project_id, user_id)
+}
+
+entity "tasks" as tasks {
+  +id : SERIAL [PK]
+  --
+  project_id : INTEGER [FK → projects.id]
+  title : TEXT
+  description : TEXT
+  status : VARCHAR(20)
+  due_date : DATE
+  created_by : INTEGER [FK → users.id]
+  created_at : TIMESTAMP
+}
+
+entity "task_assignees" as task_assignees {
+  +id : SERIAL [PK]
+  --
+  task_id : INTEGER [FK → tasks.id]
+  user_id : INTEGER [FK → users.id]
+  assigned_at : TIMESTAMP
+  UNIQUE (task_id, user_id)
+}
+
+entity "checklists" as checklists {
+  +id : SERIAL [PK]
+  --
+  task_id : INTEGER [FK → tasks.id]
+  content : TEXT
+  is_completed : BOOLEAN
+  created_by : INTEGER [FK → users.id]
+  created_at : TIMESTAMP
+}
+
+' Relationships
+users ||--o{ projects : "created_by"
+projects ||--o{ project_members : "project_id"
+users ||--o{ project_members : "user_id"
+
+projects ||--o{ tasks : "project_id"
+users ||--o{ tasks : "created_by"
+
+tasks ||--o{ task_assignees : "task_id"
+users ||--o{ task_assignees : "user_id"
+
+tasks ||--o{ checklists : "task_id"
+users ||--o{ checklists : "created_by"
+@enduml

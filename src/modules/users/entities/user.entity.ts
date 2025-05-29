@@ -31,11 +31,14 @@ export class User {
     })
     role: 'user' | 'admin';
 
-    @Column({type: 'boolean', default: true, nullable: false})
+    @Column({type: 'boolean', default: false, nullable: false})
     is_active: boolean; 
 
     @Column({type:'boolean', default: false, nullable: false})
     is_ban: boolean;
+
+    @Column({ type: 'varchar', length: 20, default: 'local' })
+    provider: 'local' | 'google';
 
     @OneToMany(() => Task, task => task.created_by)
     createdTasks: Task[];

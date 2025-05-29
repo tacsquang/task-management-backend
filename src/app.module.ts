@@ -9,6 +9,7 @@ import { UsersModule } from '@modules/users/users.module';
 import { ProjectsModule } from '@modules/projects/projects.module';
 import { ProjectMembersModule } from './modules/project-members/project-members.module';
 import { TasksModule } from './modules/tasks/tasks.module';
+import { TaskAssigneesModule } from './modules/task-assignees/task-assignees.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
     ProjectsModule,
     ProjectMembersModule,
     TasksModule,
+    TaskAssigneesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

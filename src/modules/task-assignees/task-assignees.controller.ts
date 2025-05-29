@@ -2,33 +2,35 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { TaskAssigneesService } from './task-assignees.service';
 import { CreateTaskAssigneeDto } from './dto/create-task-assignee.dto';
 import { UpdateTaskAssigneeDto } from './dto/update-task-assignee.dto';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Req } from '@nestjs/common';
+import { AssigneeDto } from './dto/assigness.dto';
 
-@Controller('task-assignees')
+@UseGuards(AuthGuard('jwt'))
+@Controller('tasks/:taskId/assignees/:userId')
 export class TaskAssigneesController {
   constructor(private readonly taskAssigneesService: TaskAssigneesService) {}
 
   @Post()
-  create(@Body() createTaskAssigneeDto: CreateTaskAssigneeDto) {
-    return this.taskAssigneesService.create(createTaskAssigneeDto);
+  async assign(
+    @Param('taskId') task_id: string,
+    @Param('userId') user_id: string,
+    @Req() req,
+  ) {
+    const assignerId = req.user.id;
+    const result = await this.taskAssigneesService.assignUserToTask(Number(task_id), user_id, assignerId);
+    return { message: 'User assigned successfully', assignee: result };
   }
 
-  @Get()
-  findAll() {
-    return this.taskAssigneesService.findAll();
+  @Delete()
+  async unassign(
+    @Param('taskId') taskId: string,
+    @Param('userId') userId: string,
+    @Req() req,
+  ) {
+    await this.taskAssigneesService.unassignUserFromTask(Number(taskId), userId, req.user.id);
+    return { message: 'User unassigned successfully' };
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.taskAssigneesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTaskAssigneeDto: UpdateTaskAssigneeDto) {
-    return this.taskAssigneesService.update(+id, updateTaskAssigneeDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.taskAssigneesService.remove(+id);
-  }
 }

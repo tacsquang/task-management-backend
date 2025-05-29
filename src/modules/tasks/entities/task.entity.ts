@@ -6,6 +6,7 @@ import {
     OneToMany,
     CreateDateColumn,
     JoinColumn,
+    Timestamp,
 } from 'typeorm';
 import { Project } from '@modules/projects/entities/project.entity';
 import { User } from '@modules/users/entities/user.entity';
@@ -42,7 +43,7 @@ export class Task {
     created_by: User;
 
     @CreateDateColumn({ name: 'created_at' })
-    created_at: Date;
+    created_at: Timestamp;
 
     @OneToMany(() => Checklist, checklist => checklist.task)
     checklists: Checklist[];

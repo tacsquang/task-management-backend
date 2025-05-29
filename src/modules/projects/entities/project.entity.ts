@@ -24,14 +24,14 @@ export class Project {
     description: string;
 
     @Column({ type: 'timestamp', nullable: true })
-    start_date: string;
+    start_date: Timestamp;
 
     @Column({ type: 'timestamp', nullable: true })
-    end_date: string;
+    end_date: Timestamp;
 
     @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
-    @JoinColumn({ name: 'created_by' })
-    created_by: User;
+    @JoinColumn({ name: 'owner_by' })
+    owner_by: User;
 
     @CreateDateColumn({ type: 'timestamp' })
     created_at: Timestamp;

@@ -5,18 +5,36 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { successResponse } from '../shared/utlis/response.utlis';
 import { UpdateDeviceTokenDto } from './dto/update-device-token.dto';
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { BadRequestResponse, ForbiddenResponse } from '../shared/swagger/responses.swagger';
 
 @UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth()
 @Controller('me')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // Xem thong tin profile
-  // Cap nhat thong tin profile
-  // Active account (gui otp ve mail)
-  // Cap nhat device_token_fcm
-
   @Get()
+  @ApiOperation({ summary: 'Lấy thông tin cá nhân người dùng' })
+  @ApiOkResponse({
+    description: 'Lấy profile thành công',
+    schema: {
+      properties: {
+        statusCode: { type: 'number', example: 200 },
+        message: { type: 'string', example: 'Lay profile thanh cong' },
+        data: {
+          type: 'object',
+          example: {
+            id: 'user_id_123',
+            email: 'user@example.com',
+            name: 'Nguyen Van A',
+            is_active: true,
+            avatar: 'https://example.com/avatar.jpg',
+          },
+        },
+      },
+    },
+  })
   async getProfile(
     @Req() req,
   ) {
@@ -26,6 +44,38 @@ export class UsersController {
   }
 
   @Patch()
+  @ApiOperation({ summary: 'Cập nhật thông tin người dùng' })
+  @ApiBody({
+    type: UpdateUserDto,
+    examples: {
+      updateProfileExample: {
+        value: {
+          name: 'Nguyen Van B',
+          avatar: 'https://example.com/avatar_new.jpg',
+        },
+      },
+    },
+  })
+  @ApiOkResponse({
+    description: 'Cập nhật thành công',
+    schema: {
+      properties: {
+        statusCode: { type: 'number', example: 200 },
+        message: { type: 'string', example: 'Update successful' },
+        data: {
+          type: 'object',
+          example: {
+            id: 'user_id_123',
+            email: 'user@example.com',
+            name: 'Nguyen Van A',
+            is_active: true,
+            avatar: 'https://example.com/avatar.jpg',
+          },
+        },
+      },
+    },
+  })
+  @BadRequestResponse()
   async updateProfile(
     @Req() req,
     @Body() updateUserDto: UpdateUserDto
@@ -43,6 +93,19 @@ export class UsersController {
   // }
 
   @Patch('device-token')
+  @ApiOperation({ summary: 'Cập nhật device FCM token' })
+  @ApiBody({ type: UpdateDeviceTokenDto })
+  @ApiOkResponse({
+    description: 'Cập nhật device token thành công',
+    schema: {
+      properties: {
+        statusCode: { type: 'number', example: 200 },
+        message: { type: 'string', example: 'Cập nhật device token thành công' },
+        data: {},
+      },
+    },
+  })
+  @BadRequestResponse()
   async updateDeviceToken(
     @Req() req,
     @Body() dto: UpdateDeviceTokenDto

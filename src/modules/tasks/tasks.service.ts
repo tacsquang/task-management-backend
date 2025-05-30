@@ -1,17 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task } from './entities/task.entity';
 import { Project } from '@modules/projects/entities/project.entity';
 import { User } from '@modules/users/entities/user.entity';
 import { NotFoundException } from '@nestjs/common';
-import { ProjectMember } from '../project-members/entities/project-member.entity';
 import { ForbiddenException } from '@nestjs/common';
+import { unescape } from 'querystring';
+import { TaskDto } from './dto/task.dto';
 
 @Injectable()
 export class TasksService {
+  prisma: any;
   constructor(
       @InjectRepository(Task)
       private taskRepo: Repository<Task>,
@@ -22,88 +24,128 @@ export class TasksService {
       @InjectRepository(User)
       private userRepo: Repository<User>,
 
-      @InjectRepository(ProjectMember)
-      private memberRepo: Repository<ProjectMember>,
   ) {}
 
-  async create(createTaskDto: CreateTaskDto, creatorId: string): Promise<Task> {
-    const project = await this.projectRepo.findOne({ where: { id: createTaskDto.projectId } });
-    if (!project) throw new NotFoundException('Project not found');
 
-    const current = await this.memberRepo.findOneBy({
-      project_id: createTaskDto.projectId,
-      user_id: creatorId,
+  async create(dto: CreateTaskDto, userId: string) {
+    const project = await this.projectRepo.findOne({
+      where: { id: dto.project_id },
+      relations: ['created_by'],
     });
 
-    if (!current) {
-      throw new ForbiddenException('You are not a member of this project.');
-    }
-    else if (!['admin', 'owner'].includes(current.role)) {
-      throw new ForbiddenException('Only admin or owner can create task');
-    }
+    if (!project) throw new NotFoundException('Project không tồn tại');
 
-    const creator = await this.userRepo.findOne({ where: { id: creatorId } });
-    if (!creator) throw new NotFoundException('Creator user not found');
+    if (project.created_by.id !== userId) {
+      throw new ForbiddenException('Bạn không có quyền tạo task trong project này');
+    }
 
     const task = this.taskRepo.create({
-        ...createTaskDto,
-        project,
-        created_by: creator,
+      title: dto.title,
+      status: dto.status ?? 'todo',
+      due_at: dto.due_at ? new Date(dto.due_at) : undefined,
+      project: { id: dto.project_id },
+      created_by: { id: userId },
     });
 
-    return this.taskRepo.save(task);
+    return new TaskDto ( await this.taskRepo.save(task) );
   }
 
-  async update(id: number, updateTaskDto: UpdateTaskDto, userId: string): Promise<Task> {
+  async update(id: string, dto: UpdateTaskDto, userId: string) {
     const task = await this.taskRepo.findOne({
       where: { id },
-      relations: ['project'],
+      relations: ['created_by'],
     });
-
-    if (!task) {
-      throw new NotFoundException('Task not found');
+    if (!task) throw new NotFoundException('Task không tồn tại');
+    if (task.created_by?.id !== userId) {
+      throw new ForbiddenException('Bạn không có quyền cập nhật task này');
     }
 
-    const current = await this.memberRepo.findOneBy({
-      project_id: task.project.id,
-      user_id: userId,
-    });
-
-    if (!current) {
-      throw new ForbiddenException('You are not a member of this project.');
-    }
-    else if (!['admin', 'owner'].includes(current.role)) {
-      throw new ForbiddenException('Only admin or owner can update task');
-    }
-
-    Object.assign(task, updateTaskDto);
-
-    return await this.taskRepo.save(task);
+    if (dto.due_at) dto.due_at = new Date(dto.due_at).toISOString();
+    this.taskRepo.merge(task, dto);
+    return new TaskDto (await this.taskRepo.save(task) );
   }
 
-  async remove(id: number, userId: string): Promise<void> {
+  async delete(id: string, userId: string) {
     const task = await this.taskRepo.findOne({
       where: { id },
-      relations: ['project', 'created_by'],
+      relations: ['created_by'],
+    });
+    if (!task) throw new NotFoundException('Task không tồn tại');
+    if (task.created_by?.id !== userId) {
+      throw new ForbiddenException('Bạn không có quyền xoá task này');
+    }
+
+    return new TaskDto (await this.taskRepo.remove(task));
+  }
+
+  async getTasksByProject(projectId: string): Promise<{ tasks: TaskDto[] }> {
+    const tasks = await this.taskRepo.find({
+      where: { project: { id: projectId } },
+      order: { created_at: 'DESC' },
+      relations: ['created_by'], 
     });
 
-    if (!task) {
-      throw new NotFoundException('Task not found');
+    return {
+      tasks: tasks.map(task => new TaskDto(task)),
+    };
+  }
+
+  async getTasksByDateAndStatus(userId: string, date: string, status: string): Promise<{ tasks: TaskDto[] }> {
+    const query = this.taskRepo
+      .createQueryBuilder('task')
+      .leftJoin('task.created_by', 'user')
+      .leftJoinAndSelect('task.project', 'project')
+      .where('user.id = :userId', { userId })
+      .andWhere('CAST(task.due_at AS DATE) = :date', { date });
+
+    if (status && status !== 'all') {
+      query.andWhere('task.status = :status', { status });
     }
 
-    const current = await this.memberRepo.findOneBy({
-      project_id: task.project.id,
-      user_id: userId,
+    const tasks = await query.orderBy('task.due_at', 'ASC').getMany();
+
+    return {
+      tasks: tasks.map(task => new TaskDto(task)),
+    };
+  }
+
+
+
+  
+  async getTasksToNotify(): Promise<any[]> {
+    const now = new Date();
+    const fewMinutesLater = new Date(now.getTime() + 60 * 1000);
+
+    const tasks = await this.taskRepo
+      .createQueryBuilder('task')
+      .addSelect(`task.due_at - INTERVAL '1 minute' * task.notify_offset_minutes`, 'remind_at')
+      .where('task.notify_enabled = :enabled', { enabled: true })
+      .andWhere('task.due_at IS NOT NULL')
+      .andWhere('task.status != :done', { done: 'done' })
+      .andWhere(
+        `task.due_at - INTERVAL '1 minute' * task.notify_offset_minutes BETWEEN :now AND :soon`,
+        { now, soon: fewMinutesLater },
+      )
+      .getRawMany();
+
+    return tasks.map(task => ({
+      id: task.task_id,
+      title: task.task_title,
+      due_at: task.task_due_at,
+      remind_at: task.remind_at,
+      created_by: task.task_created_by,
+    }));
+  }
+
+  async getUserDeviceToken(userId: string) {
+  
+    const user = await this.userRepo.findOne({
+      where: {
+        id: userId
+      },
     });
 
-    if (!current) {
-      throw new ForbiddenException('You are not a member of this project.');
-    }
-    else if (!['admin', 'owner'].includes(current.role)) {
-      throw new ForbiddenException('Only admin or owner can delete task');
-    }
-
-    await this.taskRepo.remove(task);
+    return user?.device_fcm_token;
   }
 
 }

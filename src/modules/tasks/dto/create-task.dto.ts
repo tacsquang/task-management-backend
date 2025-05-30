@@ -1,22 +1,19 @@
-import { IsNotEmpty, IsOptional, IsString, IsEnum, IsDateString, IsInt, IsUUID } from 'class-validator';
+// src/modules/tasks/dto/create-task.dto.ts
+import { IsString, IsOptional, IsEnum, IsDateString, IsUUID } from 'class-validator';
 
 export class CreateTaskDto {
-    @IsUUID()
-    projectId: string;
+  @IsString()
+  title: string;
 
-    @IsNotEmpty()
-    @IsString()
-    title: string;
+  @IsOptional()
+  @IsEnum(['todo', 'in_progress', 'done'])
+  status?: 'todo' | 'in_progress' | 'done';
 
-    @IsOptional()
-    @IsString()
-    description?: string;
+  @IsOptional()
+  @IsDateString()
+  due_at?: string;
 
-    @IsOptional()
-    @IsEnum(['todo', 'in_progress', 'done'])
-    status?: 'todo' | 'in_progress' | 'done';
-
-    @IsOptional()
-    @IsDateString()
-    due_date?: string;
+  @IsUUID()
+  @IsString()
+  project_id: string;
 }

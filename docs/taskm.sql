@@ -7,9 +7,20 @@ CREATE TABLE users (
     email TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     role VARCHAR(20) NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
+    avatar TEXT, 
     is_active BOOLEAN DEFAULT TRUE,
-    is_ban BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT NOW()
+    is_banned BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW() 
+);
+
+CREATE TABLE task_groups (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    description TEXT,
+    created_by UUID REFERENCES users(id) ON DELETE SET NULL, 
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW() 
 );
 
 CREATE TABLE projects (
@@ -18,42 +29,38 @@ CREATE TABLE projects (
     description TEXT,
     start_date DATE,
     end_date DATE,
+    logo_image TEXT, -- Sửa kiểu dữ liệu
+    task_group_id UUID REFERENCES task_groups(id) ON DELETE SET NULL, -- Sửa thành ngoại khoá
     created_by UUID REFERENCES users(id) ON DELETE SET NULL,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE project_members (
-    project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    role VARCHAR(20) NOT NULL CHECK (role IN ('owner', 'admin', 'member', 'viewer')),
-    joined_at TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (project_id, user_id)
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW() -- Thêm để theo dõi cập nhật
 );
 
 CREATE TABLE tasks (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
     title TEXT NOT NULL,
-    description TEXT,
     status VARCHAR(20) NOT NULL DEFAULT 'todo' CHECK (status IN ('todo', 'in_progress', 'done')),
     due_date DATE,
+    time TIME, -- Thêm để lưu giờ cụ thể
+    notify_enabled BOOLEAN DEFAULT FALSE;
+    notify_offset_minutes INTEGER DEFAULT 10;
     created_by UUID REFERENCES users(id) ON DELETE SET NULL,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW() -- Thêm để theo dõi cập nhật
 );
 
+CREATE TABLE notifications (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-CREATE TABLE task_assignees (
-    task_id INTEGER NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    assigned_at TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (task_id, user_id)
-);
 
-CREATE TABLE checklists (
-    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    task_id INTEGER NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+    task_id INTEGER REFERENCES tasks(id) ON DELETE CASCADE, -- nullable, vì có thể không liên quan task
+
     title TEXT NOT NULL,
-    is_done BOOLEAN DEFAULT FALSE,
-    created_by UUID REFERENCES users(id) ON DELETE SET NULL,
-    created_at TIMESTAMP DEFAULT NOW()
+    message TEXT NOT NULL,
+
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    sent_at TIMESTAMP DEFAULT NOW() -- Hoặc nullable nếu muốn quản lý gửi sau
 );

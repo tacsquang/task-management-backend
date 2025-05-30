@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RegisterDto } from './dto/register.dto';
+import { successResponse } from '../shared/utlis/response.utlis';
 
 @Controller('auth')
 export class AuthController {
@@ -15,7 +16,9 @@ export class AuthController {
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    return this.authService.login(user);
+
+    const data = await this.authService.login(user);
+    return successResponse(data,'Login successfully!');
   }
 
   @Get('google')
@@ -27,13 +30,14 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req) {
-    // req.user là dữ liệu từ GoogleStrategy.validate
-    console.log(req.user);
-    return this.authService.handleGoogleLogin(req.user);
+
+    const data = await this.authService.handleGoogleLogin(req.user);
+    return successResponse(data,'Login successfully!');
   }
 
   @Post('register')
   async register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
+    const data = await this.authService.register(dto);
+    return successResponse(data, 'Register successfully',201)
   }
 }

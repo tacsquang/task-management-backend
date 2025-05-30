@@ -1,19 +1,40 @@
 // src/modules/tasks/dto/create-task.dto.ts
-import { IsString, IsOptional, IsEnum, IsDateString, IsUUID } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsEnum, IsDateString, IsUUID } from 'class-validator';
+
+export enum TaskStatus {
+  TODO = 'todo',
+  IN_PROGRESS = 'in_progress',
+  DONE = 'done',
+}
 
 export class CreateTaskDto {
+  @ApiProperty({
+    description: 'The title of the task',
+    example: 'Complete project documentation',
+  })
   @IsString()
   title: string;
 
-  @IsOptional()
-  @IsEnum(['todo', 'in_progress', 'done'])
-  status?: 'todo' | 'in_progress' | 'done';
+  @ApiProperty({
+    description: 'The status of the task',
+    enum: TaskStatus,
+    example: TaskStatus.TODO,
+  })
+  @IsEnum(TaskStatus)
+  status: TaskStatus;
 
-  @IsOptional()
+  @ApiProperty({
+    description: 'The due date of the task',
+    example: '2024-03-25T10:00:00Z',
+  })
   @IsDateString()
-  due_at?: string;
+  due_at: string;
 
+  @ApiProperty({
+    description: 'The ID of the project this task belongs to',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
   @IsUUID()
-  @IsString()
   project_id: string;
 }

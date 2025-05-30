@@ -505,30 +505,6 @@
 
 *Note: Most endpoints in this module require JWT authentication.*
 
-### Send Notification
-- **Endpoint:** `POST /notifications/send`
-- **Description:** Sends a push notification
-- **Request Body:**
-  ```json
-  {
-    "token": "fcm_token",
-    "title": "Notification Title",
-    "message": "Notification Message",
-    "data": {
-      "key": "value"
-    }
-  }
-  ```
-- **Success Response (200 OK):**
-  ```json
-  {
-    "statusCode": 200,
-    "message": "Notification sent successfully",
-    "data": {
-      "messageId": "notification_id"
-    }
-  }
-  ```
 
 ### Get User Notifications
 - **Endpoint:** `GET /notifications`

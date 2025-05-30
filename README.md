@@ -11,6 +11,7 @@ Backend API for task management system built with NestJS.
 - Project organization
 - Push notifications
 - Task filtering and status tracking
+- API Documentation with Swagger
 
 ## Tech Stack
 
@@ -18,6 +19,7 @@ Backend API for task management system built with NestJS.
 - PostgreSQL
 - JWT & Google OAuth2
 - Firebase Cloud Messaging
+- Swagger/OpenAPI
 
 ## Getting Started
 
@@ -63,8 +65,19 @@ docker run -p 8080:8080 task-management-backend
 
 ## API Documentation
 
-- API docs: [docs/api-docs.md](docs/api-docs.md)
-- Swagger UI: `http://localhost:8080/api` (Coming soon)
+The API documentation is available through Swagger UI. After starting the server, you can access it at:
+
+```
+http://localhost:8080/api-docs
+```
+
+The Swagger UI provides:
+- Interactive API documentation
+- Request/response examples
+- Authentication requirements
+- API endpoints testing interface
+- Schema definitions
+- Response models
 
 ## Environment Variables
 
@@ -88,8 +101,6 @@ JWT_EXPIRATION=1d
 GOOGLE_CLIENT_ID=your_client_id
 GOOGLE_CLIENT_SECRET=your_client_secret
 GOOGLE_CALLBACK_URL=http://localhost:8080/auth/google/callback
-
-
 ```
 
 ## Project Structure
@@ -102,13 +113,15 @@ src/
 │   ├── tasks/          # Task management
 │   ├── projects/       # Project management
 │   └── notification/   # Notifications
-└── main.ts            # App entry point
+├── shared/            # Shared utilities and middleware
+│   ├── swagger/       # Swagger configuration and decorators
+│   └── utils/         # Common utilities
+└── main.ts           # App entry point
 ```
 
 ## Upcoming Features
 - [ ] Admin Management
 - [ ] Validate account by Email
-- [ ] Swagger documentation
 - [ ] Docker Compose
 - [ ] Rate limiting
 - [ ] Caching

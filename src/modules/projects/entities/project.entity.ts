@@ -6,39 +6,46 @@ import {
   OneToMany,
   JoinColumn,
   CreateDateColumn,
-  Timestamp,
+  UpdateDateColumn,
 } from 'typeorm';
 import { User } from '@modules/users/entities/user.entity';
 import { Task } from '@modules/tasks/entities/task.entity';
-import { ProjectMember } from '@/modules/project-members/entities/project-member.entity';
+import { TaskGroup } from '@/modules/task-groups/entities/task-group.entity';
 
 @Entity({ name: 'projects' })
 export class Project {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column({ type: 'text', nullable: false })
-    name: string;
+  @Column({ type: 'text' })
+  name: string;
 
-    @Column({ type: 'text', nullable: true })
-    description: string;
+  @Column({ type: 'text', nullable: true })
+  description: string;
 
-    @Column({ type: 'timestamp', nullable: true })
-    start_date: string;
+  @Column({ type: 'date', nullable: true })
+  start_date: Date;
 
-    @Column({ type: 'timestamp', nullable: true })
-    end_date: string;
+  @Column({ type: 'date', nullable: true })
+  end_date: Date;
 
-    @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
-    @JoinColumn({ name: 'created_by' })
-    created_by: User;
+  @Column({ type: 'text', nullable: true })
+  logo_image: string;
 
-    @CreateDateColumn({ type: 'timestamp' })
-    created_at: Timestamp;
+  @ManyToOne(() => TaskGroup, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'task_group_id' })
+  task_group?: TaskGroup;
 
-    @OneToMany(() => Task, task => task.project)
-    tasks: Task[];
+  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'created_by' })
+  created_by: User;
 
-    @OneToMany(() => ProjectMember, member => member.project)
-    members: ProjectMember[];
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
+
+  @OneToMany(() => Task, task => task.project)
+  tasks: Task[];
 }

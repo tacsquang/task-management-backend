@@ -5,9 +5,7 @@ import {
     OneToMany,
  } from "typeorm";
 import { Task } from '@modules/tasks/entities/task.entity'
-import { Checklist } from "@/modules/checklists/entities/checklist.entity";
-import { ProjectMember } from "@/modules/project-members/entities/project-member.entity";
-import { TaskAssignee } from "@/modules/task-assignees/entities/task-assignee.entity";
+import { Notification } from "@/modules/notification/entities/notification.entity";
 
 @Entity({name: 'users'})
 export class User {
@@ -37,18 +35,18 @@ export class User {
     @Column({type:'boolean', default: false, nullable: false})
     is_ban: boolean;
 
+    @Column({ type: 'text', nullable: true })
+    device_fcm_token: string | null;
+
+    @Column({ type: 'text', nullable: true })
+    avatar: string | null;
+
     @Column({ type: 'varchar', length: 20, default: 'local' })
     provider: 'local' | 'google';
 
     @OneToMany(() => Task, task => task.created_by)
     createdTasks: Task[];
 
-    @OneToMany(() => Checklist, checklist => checklist.created_by)
-    createdChecklists: Checklist[];
-
-    @OneToMany(() => ProjectMember, member => member.user)
-    projectMemberships: ProjectMember[];
-
-    @OneToMany(() => TaskAssignee, assignee => assignee.user)
-    assignedTasks: TaskAssignee[];
+    @OneToMany(() => Notification, notification => notification.user)
+    notifications: Notification[];
 }

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FCM Token Test</title>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"></script>
+</head>
+<body>
+  <h2>Get FCM Token</h2>
+  <button id="getTokenBtn">Get Token</button>
+
+  <script type="module">
+    import { firebaseConfig, vapidKey } from './firebase-config.js';
+
+    firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
+
+    async function getToken() {
+      try {
+        const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+
+        const token = await messaging.getToken({
+          vapidKey: vapidKey,
+          serviceWorkerRegistration: registration,
+        });
+
+        console.log("Token:", token);
+        alert(token);
+      } catch (err) {
+        console.error("Token error", err);
+      }
+    }
+
+    // Gắn sự kiện sau khi DOM đã sẵn sàng
+    document.getElementById('getTokenBtn').addEventListener('click', getToken);
+  </script>
+</body>
+</html>

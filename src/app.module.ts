@@ -7,6 +7,10 @@ import { AppService } from '@/app.service';
 import { AuthModule } from '@modules/auth/auth.module';
 import { UsersModule } from '@modules/users/users.module';
 import { ProjectsModule } from '@modules/projects/projects.module';
+import { TasksModule } from '@modules/tasks/tasks.module';
+import { TaskGroupsModule } from '@modules/task-groups/task-groups.module';
+import { NotificationModule } from './modules/notification/notification.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -27,10 +31,14 @@ import { ProjectsModule } from '@modules/projects/projects.module';
         synchronize: true, // Cân nhắc chuyển thành false trong production
       }),
     }),
+    ScheduleModule.forRoot(),
 
     AuthModule,
     UsersModule,
+    TaskGroupsModule,
     ProjectsModule,
+    TasksModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

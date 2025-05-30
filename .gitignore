@@ -3,6 +3,10 @@
 /node_modules
 /build
 
+firebase/*.json
+firebase-config.js
+firebase-messaging-sw.js
+
 # Logs
 logs
 *.log

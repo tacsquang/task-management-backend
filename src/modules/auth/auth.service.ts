@@ -31,9 +31,7 @@ export class AuthService {
   async login(user: any) {
     const payload = { sub: user.id, email: user.email };
     return {
-      access_token: this.jwtService.sign(payload, {
-        expiresIn: '1h',
-      }),
+      access_token: this.jwtService.sign(payload),
     };
   }
 
@@ -58,9 +56,7 @@ export class AuthService {
 
     //Tạo JWT token
     const payload = { sub: user.id, email: user.email };
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: '1h',
-    });
+    const accessToken = this.jwtService.sign(payload);
 
     return {
       access_token: accessToken,
@@ -81,7 +77,7 @@ export class AuthService {
     })
 
     return {
-      message: 'Dang ki thanh cong',
+      id: user.id,
     }
   }
 }

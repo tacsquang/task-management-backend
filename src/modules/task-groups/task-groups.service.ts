@@ -29,7 +29,7 @@ export class TaskGroupsService {
   async getTaskGroupsByUser(id: string) {
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) {
-      throw new NotFoundException('Người dùng không tồn tại');
+      throw new NotFoundException('User not found');
     }
     const data = await this.taskGroupRepo.find({
       where: {

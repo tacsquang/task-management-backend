@@ -14,14 +14,14 @@ export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Lấy danh sách thông báo của người dùng hiện tại' })
+  @ApiOperation({ summary: 'Get list of notifications for current user' })
   @ApiOkResponse({
-    description: 'Lấy danh sách thành công',
+    description: 'Successfully retrieved notifications',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 200 },
-        message: { type: 'string', example: 'Lấy danh sách thông báo thành công' },
+        message: { type: 'string', example: 'Successfully retrieved notifications' },
         data: {
           type: 'object',
           properties: {
@@ -31,8 +31,8 @@ export class NotificationController {
                 type: 'object',
                 properties: {
                   id: { type: 'string', example: 'notification_id_123' },
-                  title: { type: 'string', example: 'Bạn có một task mới' },
-                  content: { type: 'string', example: 'Task ABC đã được giao cho bạn' },
+                  title: { type: 'string', example: 'You have a new task' },
+                  content: { type: 'string', example: 'Task ABC has been assigned to you' },
                   is_read: { type: 'boolean', example: false },
                   created_at: { type: 'string', format: 'date-time', example: '2025-05-30T12:00:00.000Z' },
                 },
@@ -45,18 +45,18 @@ export class NotificationController {
   })
   async getUserNotifications(@Req() req) {
     const notifications = await this.notificationService.getUserNotifications(req.user.id);
-    return successResponse({ notifications }, 'thanh cong');
+    return successResponse({ notifications }, 'Success');
   }
 
   @Patch(':id/read')
-  @ApiOperation({ summary: 'Đánh dấu thông báo là đã đọc' })
+  @ApiOperation({ summary: 'Mark notification as read' })
   @ApiOkResponse({
-    description: 'Đánh dấu thành công',
+    description: 'Successfully marked as read',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 200 },
-        message: { type: 'string', example: 'Đã đánh dấu là đã đọc' },
+        message: { type: 'string', example: 'Successfully marked as read' },
         data: {
           type: 'array',
           example: [],
@@ -71,7 +71,6 @@ export class NotificationController {
     @Req() req,
   ) {
     await this.notificationService.markAsRead(id, req.user.id);
-    return successResponse([], 'Da danh dau la da doc'); 
+    return successResponse([], 'Successfully marked as read'); 
   }
-
 }

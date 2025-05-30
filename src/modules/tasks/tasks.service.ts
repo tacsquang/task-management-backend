@@ -33,10 +33,10 @@ export class TasksService {
       relations: ['created_by'],
     });
 
-    if (!project) throw new NotFoundException('Project không tồn tại');
+    if (!project) throw new NotFoundException('Project not found');
 
     if (project.created_by.id !== userId) {
-      throw new ForbiddenException('Bạn không có quyền tạo task trong project này');
+      throw new ForbiddenException('You do not have permission to create task in this project');
     }
 
     const task = this.taskRepo.create({
@@ -55,9 +55,9 @@ export class TasksService {
       where: { id },
       relations: ['created_by'],
     });
-    if (!task) throw new NotFoundException('Task không tồn tại');
+    if (!task) throw new NotFoundException('Task not found');
     if (task.created_by?.id !== userId) {
-      throw new ForbiddenException('Bạn không có quyền cập nhật task này');
+      throw new ForbiddenException('You do not have permission to update this task');
     }
 
     if (dto.due_at) dto.due_at = new Date(dto.due_at).toISOString();
@@ -70,9 +70,9 @@ export class TasksService {
       where: { id },
       relations: ['created_by'],
     });
-    if (!task) throw new NotFoundException('Task không tồn tại');
+    if (!task) throw new NotFoundException('Task not found');
     if (task.created_by?.id !== userId) {
-      throw new ForbiddenException('Bạn không có quyền xoá task này');
+      throw new ForbiddenException('You do not have permission to delete this task');
     }
 
     return new TaskDto (await this.taskRepo.remove(task));

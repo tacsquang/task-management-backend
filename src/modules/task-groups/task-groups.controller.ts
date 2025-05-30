@@ -22,7 +22,7 @@ export class TaskGroupsController {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 201 },
-        message: { type: 'string', example: 'Tao thanh cong' },
+        message: { type: 'string', example: 'Created successfully' },
         data: {
           type: 'object',
           example: {
@@ -39,18 +39,18 @@ export class TaskGroupsController {
     @Req() req,
   ) {
     const data = await this.taskGroupsService.createTaskGroup(dto, req.user.id);
-    return successResponse({id: data.id}, 'Tao thanh cong', 201)
+    return successResponse({id: data.id}, 'Created successfully', 201)
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all task groups of current user' })
   @ApiOkResponse({
-    description: 'Success lay thanh cong cac task-group',
+    description: 'Successfully retrieved task groups',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 200 },
-        message: { type: 'string', example: 'Success lay thanh cong cac task-group' },
+        message: { type: 'string', example: 'Successfully retrieved task groups' },
         data: {
           type: 'object',
           example: {
@@ -67,7 +67,7 @@ export class TaskGroupsController {
     @Req() req
   ) {
     const data = await this.taskGroupsService.getTaskGroupsByUser(req.user.id);
-    return successResponse(data, 'Success lay thanh cong cac task-group');
+    return successResponse(data, 'Successfully retrieved task groups');
   }
 
 
@@ -81,12 +81,12 @@ export class TaskGroupsController {
   })
   @ApiBody({ type: UpdateTaskGroupDto })
   @ApiOkResponse({
-    description: 'Cap nhat thanh cong',
+    description: 'Update successful',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 200 },
-        message: { type: 'string', example: 'Cap nhat thang cong' },
+        message: { type: 'string', example: 'Update successful' },
         data: {
           type: 'object',
           example: {
@@ -108,7 +108,7 @@ export class TaskGroupsController {
     @Req() req,
   ) {
     const data = await this.taskGroupsService.updateTaskGroup(id, dto, req.user.id);
-    return successResponse(data, 'Cap nhat thang cong');
+    return successResponse(data, 'Update successful');
   }
 
   @Delete(':id')
@@ -120,12 +120,12 @@ export class TaskGroupsController {
     example: 'group_id_123',
   })
   @ApiOkResponse({
-    description: 'Xoa thanh cong',
+    description: 'Delete successful',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 200 },
-        message: { type: 'string', example: 'Xoa thanh cong' },
+        message: { type: 'string', example: 'Delete successful' },
         data: {
           type: 'array',
           example: [],
@@ -139,6 +139,6 @@ export class TaskGroupsController {
     @Req() req
   ) {
     await this.taskGroupsService.removeTaskGroup(id, req.user.id);
-    return successResponse([], 'Xoa thanh cong');
+    return successResponse([], 'Delete successful');
   }
 }

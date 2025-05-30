@@ -33,14 +33,14 @@ export class ProjectsService {
       }
 
       if (found.createdBy.id !== userId) {
-        throw new ForbiddenException('Bạn không có quyền tạo project trong task group này');
+        throw new ForbiddenException('You do not have permission to create project in this task group');
       }
 
       taskGroup = found;
     }
 
     if ((dto.start_date && !dto.end_date) || (!dto.start_date && dto.end_date)) {
-      throw new BadRequestException('start_date và end_date phải cùng có hoặc cùng không');
+      throw new BadRequestException('start_date and end_date must be provided together or not at all');
     }
 
     const newProject = this.projectRepo.create({
@@ -62,7 +62,7 @@ export class ProjectsService {
     if (!project) throw new NotFoundException('Project not found');
 
     if (project.created_by.id !== userId) {
-      throw new ForbiddenException('Không có quyền sửa project này');
+      throw new ForbiddenException('You do not have permission to edit this project');
     }
 
     if (dto.task_group_id) {
@@ -89,7 +89,7 @@ export class ProjectsService {
     if (!project) throw new NotFoundException('Project not found');
 
     if (project.created_by.id !== userId) {
-      throw new ForbiddenException('Không có quyền xoá project này');
+      throw new ForbiddenException('You do not have permission to delete this project');
     }
 
     await this.projectRepo.remove(project);

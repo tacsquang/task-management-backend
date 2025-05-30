@@ -17,19 +17,19 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Get('project/:projectId')
-  @ApiOperation({ summary: 'Lấy danh sách task theo project' })
+  @ApiOperation({ summary: 'Get tasks by project' })
   @ApiParam({
     name: 'projectId',
     type: 'string',
-    description: 'ID của project',
+    description: 'Project ID',
     example: '92abfa8e-b0ec-4976-ae09-30c1cbee3252',
   })
   @ApiOkResponse({
-    description: 'Lấy danh sách task thành công',
+    description: 'Successfully retrieved tasks',
     schema: {
       properties: {
         statusCode: { type: 'number', example: 200 },
-        message: { type: 'string', example: 'Lấy danh sách task thành công' },
+        message: { type: 'string', example: 'Successfully retrieved tasks' },
         data: {
           type: 'array',
           example: [
@@ -49,24 +49,24 @@ export class TasksController {
   @ForbiddenResponse()
   async getByProject(@Param('projectId') projectId: string) {
     const tasks = await this.tasksService.getTasksByProject(projectId);
-    return successResponse(tasks, 'Lấy danh sách task thành công');
+    return successResponse(tasks, 'Successfully retrieved tasks');
   }
 
   @Post()
-  @ApiOperation({ summary: 'Tạo task mới' })
+  @ApiOperation({ summary: 'Create new task' })
   @ApiBody({ type: CreateTaskDto })
   @ApiCreatedResponse({
-    description: 'Tạo task thành công',
+    description: 'Task created successfully',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 201 },
-        message: { type: 'string', example: 'Tạo task thành công' },
+        message: { type: 'string', example: 'Task created successfully' },
         data: {
           type: 'object',
           example: {
             id: 'task_123',
-            title: 'Viết tài liệu kỹ thuật',
+            title: 'Write technical documentation',
             status: 'todo',
             due_at: '2025-06-15T18:00:00.000Z',
           },
@@ -79,24 +79,24 @@ export class TasksController {
   @ForbiddenResponse()
   async create(@Body() dto: CreateTaskDto, @Req() req) {
     const task = await this.tasksService.create(dto, req.user.id);
-    return successResponse(task, 'Tạo task thành công', 201);
+    return successResponse(task, 'Task created successfully', 201);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Cập nhật task' })
+  @ApiOperation({ summary: 'Update task' })
   @ApiBody({ type: UpdateTaskDto })
   @ApiOkResponse({
-    description: 'Cập nhật task thành công',
+    description: 'Task updated successfully',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 200 },
-        message: { type: 'string', example: 'Cập nhật task thành công' },
+        message: { type: 'string', example: 'Task updated successfully' },
         data: {
           type: 'object',
           example: {
             id: 'task_123',
-            title: 'Cập nhật tài liệu kỹ thuật',
+            title: 'Update technical documentation',
             status: 'in_progress',
             due_at: '2025-06-20T23:59:59.000Z',
           },
@@ -108,18 +108,18 @@ export class TasksController {
   @ForbiddenResponse()
   async update(@Param('id') id: string, @Body() dto: UpdateTaskDto, @Req() req) {
     const task = await this.tasksService.update(id, dto, req.user.id);
-    return successResponse(task, 'Cập nhật task thành công');
+    return successResponse(task, 'Task updated successfully');
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Xoá task theo ID' })
+  @ApiOperation({ summary: 'Delete task by ID' })
   @ApiOkResponse({
-    description: 'Xoá task thành công',
+    description: 'Task deleted successfully',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 200 },
-        message: { type: 'string', example: 'Xoá task thành công' },
+        message: { type: 'string', example: 'Task deleted successfully' },
         data: {
           type: 'array',
           example: [],
@@ -131,25 +131,25 @@ export class TasksController {
   @ForbiddenResponse()
   async delete(@Param('id') id: string, @Req() req) {
     await this.tasksService.delete(id, req.user.id);
-    return successResponse([],'Xoá task thành công');
+    return successResponse([], 'Task deleted successfully');
   }
 
   @Get('today')
-  @ApiOperation({ summary: 'Lọc task theo ngày và trạng thái' })
-  @ApiQuery({ name: 'date', required: true, example: '2025-05-30', description: 'Ngày cần lọc (định dạng: YYYY-MM-DD)' })
+  @ApiOperation({ summary: 'Filter tasks by date and status' })
+  @ApiQuery({ name: 'date', required: true, example: '2025-05-30', description: 'Date to filter (format: YYYY-MM-DD)' })
   @ApiQuery({
     name: 'status',
     required: false,
     example: 'todo',
-    description: 'Trạng thái của task (all | todo | inprogress | done)',
+    description: 'Task status (all | todo | inprogress | done)',
   })
   @ApiOkResponse({
-    description: 'Lọc task theo ngày và trạng thái thành công',
+    description: 'Successfully filtered tasks by date and status',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 200 },
-        message: { type: 'string', example: 'Lọc task theo ngày và trạng thái thành công' },
+        message: { type: 'string', example: 'Successfully filtered tasks by date and status' },
         data: {
           type: 'array',
           items: {
@@ -168,14 +168,14 @@ export class TasksController {
   })
   async filterByDateAndStatus(@Req() req, @Query('date') date: string, @Query('status') status: string) {
     if (!date || !dayjs(date, 'YYYY-MM-DD', true).isValid()) {
-      throw new BadRequestException('Tham số ngày không hợp lệ (định dạng: YYYY-MM-DD)');
+      throw new BadRequestException('Invalid date parameter (format: YYYY-MM-DD)');
     }
     const validStatuses = ['all', 'todo', 'inprogress', 'done'];
     if (status && !validStatuses.includes(status)) {
-      throw new BadRequestException('Trạng thái không hợp lệ');
+      throw new BadRequestException('Invalid status');
     }
     const tasks = await this.tasksService.getTasksByDateAndStatus(req.user.id, date, status);
-    return successResponse(tasks, 'Lọc task theo ngày và trạng thái thành công');
+    return successResponse(tasks, 'Successfully filtered tasks by date and status');
   }
 
 }

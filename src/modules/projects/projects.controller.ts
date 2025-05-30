@@ -17,12 +17,12 @@ export class ProjectsController {
   @ApiOperation({ summary: 'Create a new project' })
   @ApiBody({ type: CreateProjectDto })
   @ApiCreatedResponse({
-    description: 'Tạo project thành công',
+    description: 'Project created successfully',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 201 },
-        message: { type: 'string', example: 'Tạo project thành công' },
+        message: { type: 'string', example: 'Project created successfully' },
         data: {
           type: 'object',
           example: {
@@ -42,7 +42,7 @@ export class ProjectsController {
   @ForbiddenResponse()
   async create(@Body() dto: CreateProjectDto, @Req() req) {
     const data = await this.projectsService.createProject(dto, req.user.id);
-    return successResponse(data, 'Tạo project thành công', 201);
+    return successResponse(data, 'Project created successfully', 201);
   }
 
   @Patch(':id')
@@ -50,11 +50,11 @@ export class ProjectsController {
   @ApiParam({ name: 'id', description: 'Project ID', example: 'project_id_123' })
   @ApiBody({ type: UpdateProjectDto })
   @ApiOkResponse({
-    description: 'Cập nhật project thành công',
+    description: 'Project updated successfully',
     schema: {
       properties: {
         statusCode: { type: 'number', example: 200 },
-        message: { type: 'string', example: 'Cập nhật project thành công' },
+        message: { type: 'string', example: 'Project updated successfully' },
         data: {
           type: 'object',
           example: {
@@ -74,7 +74,7 @@ export class ProjectsController {
   @ForbiddenResponse()
   async update(@Param('id') id: string, @Body() dto: UpdateProjectDto, @Req() req) {
     const data = await this.projectsService.updateProject(id, dto, req.user.id);
-    return successResponse(data, 'Cập nhật project thành công');
+    return successResponse(data, 'Project updated successfully');
   }
 
   @Delete(':id')
@@ -90,7 +90,7 @@ export class ProjectsController {
     schema: {
       properties: {
         statusCode: { type: 'number', example: 200 },
-        message: { type: 'string', example: 'Xoá project thành công' },
+        message: { type: 'string', example: 'Project deleted successfully' },
         data: {
           type: 'array',
           example: [],
@@ -102,7 +102,7 @@ export class ProjectsController {
   @ForbiddenResponse()
   async delete(@Param('id') id: string, @Req() req) {
     const data = await this.projectsService.deleteProject(id, req.user.id);
-    return successResponse(data, 'Xoá project thành công');
+    return successResponse(data, 'Project deleted successfully');
   }
 
   @Get('task-group/:taskGroupId')
@@ -114,11 +114,11 @@ export class ProjectsController {
     example: '9e36a611-447b-4c97-9908-113e613cf2b3',
   })
   @ApiOkResponse({
-    description: 'List of projects retrieved successfully',
+    description: 'Successfully retrieved projects by task group',
     schema: {
       properties: {
         statusCode: { type: 'number', example: 200 },
-        message: { type: 'string', example: 'Lấy danh sách project theo task group thành công' },
+        message: { type: 'string', example: 'Successfully retrieved projects by task group' },
         data: {
           type: 'array',
           example: [
@@ -149,7 +149,7 @@ export class ProjectsController {
   @ForbiddenResponse()
   async getByTaskGroup(@Param('taskGroupId') taskGroupId: string) {
     const data = await this.projectsService.getProjectsByTaskGroup(taskGroupId);
-    return successResponse(data, 'Lấy danh sách project theo task group thành công');
+    return successResponse(data, 'Successfully retrieved projects by task group');
   }
 
 }

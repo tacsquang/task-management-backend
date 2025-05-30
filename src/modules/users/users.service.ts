@@ -16,14 +16,14 @@ export class UsersService {
   async findById(id: string): Promise<UserDto> {
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) {
-      throw new NotFoundException('Người dùng không tồn tại');
+      throw new NotFoundException('User not found');
     }
     return new UserDto(user);
   }
 
   async updateProfile(id: string, dto: UpdateUserDto): Promise<UserDto> {
     if (!dto.name?.trim() && !dto.avatar?.trim()) {
-      throw new BadRequestException('Phải cập nhật ít nhất một trường.');
+      throw new BadRequestException('Must update at least one field.');
     }
 
     const payload: Partial<UserDto> = {};
@@ -36,10 +36,10 @@ export class UsersService {
 
   async updateDeviceToken(userId: string, token: string): Promise<UserDto> {
     if (!token || !token.trim()) {
-      throw new BadRequestException('Token không hợp lệ');
+      throw new BadRequestException('Invalid token');
     }
 
-    // Kiểm tra xem user có tồn tại không
+    // Check if user exists
     await this.findById(userId);
 
     await this.userRepo.update({ id: userId }, { device_fcm_token: token.trim() });

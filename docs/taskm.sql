@@ -29,11 +29,11 @@ CREATE TABLE projects (
     description TEXT,
     start_date DATE,
     end_date DATE,
-    logo_image TEXT, -- Sửa kiểu dữ liệu
-    task_group_id UUID REFERENCES task_groups(id) ON DELETE SET NULL, -- Sửa thành ngoại khoá
+    logo_image TEXT, -- Change data type
+    task_group_id UUID REFERENCES task_groups(id) ON DELETE SET NULL, -- Change to foreign key
     created_by UUID REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW() -- Thêm để theo dõi cập nhật
+    updated_at TIMESTAMP DEFAULT NOW() -- Add to track updates
 );
 
 CREATE TABLE tasks (
@@ -42,12 +42,12 @@ CREATE TABLE tasks (
     title TEXT NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'todo' CHECK (status IN ('todo', 'in_progress', 'done')),
     due_date DATE,
-    time TIME, -- Thêm để lưu giờ cụ thể
+    time TIME, -- Add to store specific time
     notify_enabled BOOLEAN DEFAULT FALSE;
     notify_offset_minutes INTEGER DEFAULT 10;
     created_by UUID REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW() -- Thêm để theo dõi cập nhật
+    updated_at TIMESTAMP DEFAULT NOW() -- Add to track updates
 );
 
 CREATE TABLE notifications (
@@ -55,12 +55,12 @@ CREATE TABLE notifications (
 
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
-    task_id INTEGER REFERENCES tasks(id) ON DELETE CASCADE, -- nullable, vì có thể không liên quan task
+    task_id INTEGER REFERENCES tasks(id) ON DELETE CASCADE, -- nullable, as it may not be related to a task
 
     title TEXT NOT NULL,
     message TEXT NOT NULL,
 
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT NOW(),
-    sent_at TIMESTAMP DEFAULT NOW() -- Hoặc nullable nếu muốn quản lý gửi sau
+    sent_at TIMESTAMP DEFAULT NOW() -- Or nullable if you want to manage sending later
 );

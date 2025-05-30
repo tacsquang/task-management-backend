@@ -4,15 +4,15 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateTaskDto {
   @ApiPropertyOptional({
-    description: 'Tiêu đề mới của task',
-    example: 'Cập nhật kế hoạch dự án',
+    description: 'New title of the task',
+    example: 'Update project plan',
   })
   @IsOptional()
   @IsString()
   title?: string;
 
   @ApiPropertyOptional({
-    description: 'Trạng thái mới của task',
+    description: 'New status of the task',
     enum: ['todo', 'in_progress', 'done'],
     example: 'in_progress',
   })
@@ -21,7 +21,7 @@ export class UpdateTaskDto {
   status?: 'todo' | 'in_progress' | 'done';
 
   @ApiPropertyOptional({
-    description: 'Thời hạn mới của task (ISO 8601)',
+    description: 'New due date of the task (ISO 8601)',
     example: '2025-06-15T00:00:00.000Z',
   })
   @IsOptional()

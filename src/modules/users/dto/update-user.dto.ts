@@ -6,16 +6,16 @@ export class UpdateUserDto {
   @IsString()
   @MaxLength(50)
   @ApiPropertyOptional({
-    description: 'Tên đầy đủ của người dùng',
+    description: 'Full name of the user',
     maxLength: 50,
-    example: 'Nguyen Van A',
+    example: 'John Doe',
   })
   name?: string;
 
   @IsOptional()
   @IsString()
   @ApiPropertyOptional({
-    description: 'URL ảnh đại diện của người dùng',
+    description: 'URL of user avatar',
     example: 'https://example.com/avatar.jpg',
   })
   avatar?: string;

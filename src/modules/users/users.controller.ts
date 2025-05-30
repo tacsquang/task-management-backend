@@ -15,13 +15,13 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Lấy thông tin cá nhân người dùng' })
+  @ApiOperation({ summary: 'Get user profile information' })
   @ApiOkResponse({
-    description: 'Lấy profile thành công',
+    description: 'Get profile successfully',
     schema: {
       properties: {
         statusCode: { type: 'number', example: 200 },
-        message: { type: 'string', example: 'Lay profile thanh cong' },
+        message: { type: 'string', example: 'Get profile successfully' },
         data: {
           type: 'object',
           example: {
@@ -40,11 +40,11 @@ export class UsersController {
   ) {
 
     const data = await this.usersService.findById(req.user.id);
-    return successResponse(data, 'Lay profile thanh cong')
+    return successResponse(data, 'Get profile successfully')
   }
 
   @Patch()
-  @ApiOperation({ summary: 'Cập nhật thông tin người dùng' })
+  @ApiOperation({ summary: 'Update user information' })
   @ApiBody({
     type: UpdateUserDto,
     examples: {
@@ -57,7 +57,7 @@ export class UsersController {
     },
   })
   @ApiOkResponse({
-    description: 'Cập nhật thành công',
+    description: 'Update successful',
     schema: {
       properties: {
         statusCode: { type: 'number', example: 200 },
@@ -93,14 +93,14 @@ export class UsersController {
   // }
 
   @Patch('device-token')
-  @ApiOperation({ summary: 'Cập nhật device FCM token' })
+  @ApiOperation({ summary: 'Update device FCM token' })
   @ApiBody({ type: UpdateDeviceTokenDto })
   @ApiOkResponse({
-    description: 'Cập nhật device token thành công',
+    description: 'Device token updated successfully',
     schema: {
       properties: {
         statusCode: { type: 'number', example: 200 },
-        message: { type: 'string', example: 'Cập nhật device token thành công' },
+        message: { type: 'string', example: 'Device token updated successfully' },
         data: {},
       },
     },
@@ -111,7 +111,7 @@ export class UsersController {
     @Body() dto: UpdateDeviceTokenDto
   ) {
     const data = await this.usersService.updateDeviceToken(req.user.id, dto.device_fcm_token);
-    return successResponse(data, 'Cập nhật device token thành công');
+    return successResponse(data, 'Device token updated successfully');
   }
 
 }

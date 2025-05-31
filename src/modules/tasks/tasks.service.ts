@@ -43,11 +43,13 @@ export class TasksService {
       title: dto.title,
       status: dto.status ?? 'todo',
       due_at: dto.due_at ? new Date(dto.due_at) : undefined,
+      notify_enabled: dto.notify_enabled ?? false,
+      notify_offset_minutes: dto.notify_offset_minutes ?? 10,
       project: { id: dto.project_id },
       created_by: { id: userId },
     });
 
-    return new TaskDto ( await this.taskRepo.save(task) );
+    return new TaskDto(await this.taskRepo.save(task));
   }
 
   async update(id: string, dto: UpdateTaskDto, userId: string) {

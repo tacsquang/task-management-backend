@@ -41,7 +41,7 @@ export class AuthController {
         statusCode: { type: 'number', example: 200 },
         message: { type: 'string', example: 'Login successfully!' },
         data: { type: 'object', example: {
-            "access_token": "adfjsgsdgklasdgjsadjglskd;salkdgj;slkdgj;slkgdsjlsa;fsjag" 
+            "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxYWViYjA1NC02MDA4LTQ3OTktYTA3Ny0zZjUxYWE3YWIzNWIiLCJlbWFpbCI6InRhY0BnbWFpbC5jb20iLCJpYXQiOjE3NDg2NTAzOTgsImV4cCI6MTc0ODczNjc5OH0.jKEfTRmEovXQtuRJl3vCKEuE_R6Nn6JfaRDHegrMHTc" 
         } },
       },
     },
@@ -96,7 +96,7 @@ export class AuthController {
         data: {
           type: 'object',
           example: {
-            access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxYWViYjA1NC02MDA4LTQ3OTktYTA3Ny0zZjUxYWE3YWIzNWIiLCJlbWFpbCI6InRhY0BnbWFpbC5jb20iLCJpYXQiOjE3NDg2NTAzOTgsImV4cCI6MTc0ODczNjc5OH0.jKEfTRmEovXQtuRJl3vCKEuE_R6Nn6JfaRDHegrMHTc',
           },
         },
       },
@@ -119,7 +119,7 @@ export class AuthController {
         data: {
           type: 'object',
           example: {
-            id: '',
+            id: '24242daf-e226-4f4b-a74c-8e62558f4a10',
           },
         },
       },

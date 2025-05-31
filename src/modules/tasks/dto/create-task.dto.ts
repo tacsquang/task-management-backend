@@ -1,5 +1,5 @@
 // src/modules/tasks/dto/create-task.dto.ts
-import { IsString, IsOptional, IsEnum, IsDateString, IsUUID } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsDateString, IsUUID, IsBoolean, IsInt, Min, Max } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateTaskDto {
@@ -21,7 +21,7 @@ export class CreateTaskDto {
 
   @ApiPropertyOptional({
     description: 'Due date of the task (ISO 8601)',
-    example: '2025-06-01T00:00:00.000Z',
+    example: '2025-05-31T07:56:00+07:00',
   })
   @IsOptional()
   @IsDateString()
@@ -34,4 +34,24 @@ export class CreateTaskDto {
   @IsUUID()
   @IsString()
   project_id: string;
+
+    @ApiPropertyOptional({
+    description: 'Enable notification for this task',
+    example: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  notify_enabled?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'How many minutes before due_at to notify',
+    example: 10,
+    minimum: 1,
+    maximum: 1440, // 24 tiếng
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(1440)
+  notify_offset_minutes?: number;
 }

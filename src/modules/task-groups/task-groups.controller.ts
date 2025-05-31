@@ -33,7 +33,6 @@ export class TaskGroupsController {
     },
   })
   @BadRequestResponse()
-  @ForbiddenResponse()
   async create(
     @Body() dto: CreateTaskGroupDto,
     @Req() req,
@@ -90,10 +89,11 @@ export class TaskGroupsController {
         data: {
           type: 'object',
           example: {
-            taskGroups: [
-              { id: "8a7187cc-a044-4659-8c0a-0f9a3eb9fcac", name: "work", description: "Tasks related to personal work"},
-              { id: "9a7187cc-a044-4659-8c0a-0f9a3eb9fcac", name: "study", description: "Tasks related to personal study"},
-            ],
+            id: "db32563e-0477-4fb7-8382-a22eec7265ed",
+            name: "New group name",
+            description: "Updated description for the task group",
+            createdAt: "2025-05-29T21:06:15.049Z",
+            updatedAt: "2025-05-30T17:18:16.412Z"
           },
         },
       },

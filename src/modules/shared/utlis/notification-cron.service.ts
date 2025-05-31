@@ -17,6 +17,7 @@ export class NotificationCronService {
     const now = new Date();
 
     const tasks = await this.taskService.getTasksToNotify();
+    console.log(tasks);
 
     for (const task of tasks) {
         const token = await this.taskService.getUserDeviceToken(task.created_by);

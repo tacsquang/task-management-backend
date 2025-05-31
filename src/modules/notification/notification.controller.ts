@@ -35,6 +35,8 @@ export class NotificationController {
                   content: { type: 'string', example: 'Task ABC has been assigned to you' },
                   is_read: { type: 'boolean', example: false },
                   created_at: { type: 'string', format: 'date-time', example: '2025-05-30T12:00:00.000Z' },
+                  sent_at: { type: 'string', format: 'date-time', example: '2025-05-30T07:24:40.010Z'},
+                  task_id: { type: 'string', example: '91ada0b3-4820-4f4f-bfbd-ce072825ca76'}
                 },
               },
             },

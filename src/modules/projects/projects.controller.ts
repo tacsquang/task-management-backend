@@ -102,7 +102,7 @@ export class ProjectsController {
   @ForbiddenResponse()
   async delete(@Param('id') id: string, @Req() req) {
     const data = await this.projectsService.deleteProject(id, req.user.id);
-    return successResponse(data, 'Project deleted successfully');
+    return successResponse([], 'Project deleted successfully');
   }
 
   @Get('task-group/:taskGroupId')

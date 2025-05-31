@@ -101,7 +101,10 @@ export class UsersController {
       properties: {
         statusCode: { type: 'number', example: 200 },
         message: { type: 'string', example: 'Device token updated successfully' },
-        data: {},
+        data: {
+          type: 'array',
+          example: [],
+        },
       },
     },
   })
@@ -111,7 +114,7 @@ export class UsersController {
     @Body() dto: UpdateDeviceTokenDto
   ) {
     const data = await this.usersService.updateDeviceToken(req.user.id, dto.device_fcm_token);
-    return successResponse(data, 'Device token updated successfully');
+    return successResponse([], 'Device token updated successfully');
   }
 
 }

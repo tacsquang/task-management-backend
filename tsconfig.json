@@ -15,7 +15,8 @@
       "@modules/*": ["modules/*"],
       "@common/*": ["common/*"],
       "@config/*": ["config/*"],
-      "@utils/*": ["utils/*"]
+      "@utils/*": ["utils/*"],
+      "@shared/*": ["shared/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build && cp src/modules/firebase/firebase-adminsdk.json dist/modules/firebase/",
+    "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "2.0.2",
     "@nestjs/common": "11.1.2",
     "@nestjs/config": "4.0.2",
     "@nestjs/core": "11.1.2",
@@ -28,21 +29,25 @@
     "@nestjs/passport": "11.0.5",
     "@nestjs/platform-express": "11.1.2",
     "@nestjs/schedule": "6.0.0",
-    "@nestjs/swagger": "^11.2.0",
+    "@nestjs/swagger": "11.2.0",
     "@nestjs/typeorm": "11.0.0",
     "@types/bcrypt": "5.0.2",
+    "@types/nodemailer": "6.4.17",
     "bcrypt": "6.0.0",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.2",
+    "date-fns": "^4.1.0",
     "firebase-admin": "13.4.0",
-    "node-mailjet": "^6.0.8",
+    "handlebars": "4.7.8",
+    "node-mailjet": "6.0.8",
+    "nodemailer": "7.0.3",
     "passport": "0.7.0",
     "passport-google-oauth20": "2.0.0",
     "passport-jwt": "4.0.1",
     "pg": "8.16.0",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "5.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.1",

@@ -10,14 +10,14 @@
   <button id="getTokenBtn">Get Token</button>
 
   <script type="module">
-    import { firebaseConfig, vapidKey } from './firebase-config.js';
+    import { firebaseConfig, vapidKey } from '/firebase-config.js';
 
     firebase.initializeApp(firebaseConfig);
     const messaging = firebase.messaging();
 
     async function getToken() {
       try {
-        const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
 
         const token = await messaging.getToken({
           vapidKey: vapidKey,

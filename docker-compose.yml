@@ -1,27 +1,46 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres:15
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: task-management-api
     restart: always
-    environment:
-      POSTGRES_DB: mydb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-  backend:
-    build: .
-    command: npm run start:prod
-    env_file:
-      - .env
     ports:
       - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - FIREBASE_API_KEY=${FIREBASE_API_KEY}
+      - FIREBASE_AUTH_DOMAIN=${FIREBASE_AUTH_DOMAIN}
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_MESSAGING_SENDER_ID=${FIREBASE_MESSAGING_SENDER_ID}
+      - FIREBASE_APP_ID=${FIREBASE_APP_ID}
+      - FIREBASE_VAPID_KEY=${FIREBASE_VAPID_KEY}
     depends_on:
-      - db
+      - postgres
+    networks:
+      - task-management-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: task-management-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=mydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - task-management-network
 
 volumes:
-  pgdata:
+  postgres_data:
+
+networks:
+  task-management-network:
+    driver: bridge

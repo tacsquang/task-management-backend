@@ -9,36 +9,35 @@ import { UsersModule } from '@modules/users/users.module';
 import { ProjectsModule } from '@modules/projects/projects.module';
 import { TasksModule } from '@modules/tasks/tasks.module';
 import { TaskGroupsModule } from '@modules/task-groups/task-groups.module';
-import { NotificationModule } from './modules/notification/notification.module';
+import { NotificationModule } from '@modules/notification/notification.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { EmailModule } from '@common/email/email.module';
+import { FirebaseModule } from '@common/firebase/firebase.module';
+import configuration from './config/configuration';
+import { getDatabaseConfig } from './config/database.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Có thể inject ConfigService ở bất kỳ đâu
+      isGlobal: true,
+      load: [configuration],
     }),
 
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        host: config.get<string>('DB_HOST'),
-        port: parseInt(config.get<string>('DB_PORT', '5432'), 10),
-        username: config.get<string>('DB_USERNAME'),
-        password: config.get<string>('DB_PASSWORD'),
-        database: config.get<string>('DB_NAME'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true, // Cân nhắc chuyển thành false trong production
-      }),
+      useFactory: getDatabaseConfig,
     }),
+
     ScheduleModule.forRoot(),
 
+    FirebaseModule,
     AuthModule,
     UsersModule,
     TaskGroupsModule,
     ProjectsModule,
     TasksModule,
     NotificationModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

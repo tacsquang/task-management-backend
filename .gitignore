@@ -7,6 +7,8 @@ firebase/*.json
 firebase-config.js
 firebase-messaging-sw.js
 
+firebases
+
 # Logs
 logs
 *.log
@@ -18,6 +20,7 @@ lerna-debug.log*
 
 # OS
 .DS_Store
+Thumbs.db
 
 # Tests
 /coverage
@@ -58,3 +61,41 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Firebase config files
+firebase/firebase-config.js
+firebase/firebase-messaging-sw.js
+firebase-adminsdk.json
+
+# Dependencies
+node_modules/
+dist/
+build/
+
+# Environment
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Test
+coverage/
+.nyc_output/
+
+# Docker temporary files
+writing
+exporting
+[app]
+[app
+CACHED
+transferring
+=
+naming

@@ -7,12 +7,14 @@ import {
   UnauthorizedException,
   UseGuards,
   Req,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
+import { AuthService } from '@modules/auth/services/auth.service';
+import { LoginDto } from '@modules/auth/dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { RegisterDto } from './dto/register.dto';
-import { successResponse } from '../shared/utlis/response.utlis';
+import { RegisterDto } from '@modules/auth/dto/register.dto';
+import { successResponse } from '@shared/utlis/response.utlis';
 import {
   ApiOperation,
   ApiTags,
@@ -22,14 +24,21 @@ import {
   ApiUnauthorizedResponse,
   ApiExcludeEndpoint,
   ApiCreatedResponse,
+  ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import { messaging } from 'firebase-admin';
-import { BadRequestResponse, UnauthorizedResponse } from '../shared/swagger/responses.swagger';
+import { BadRequestResponse, UnauthorizedResponse } from '@shared/swagger/responses.swagger';
+import { OTPService } from '@modules/auth/services/otp.service';
+import { RequestOTPDto, ResetPasswordDto } from '@modules/auth/dto/otp.dto';
+import { OTPType } from '@modules/auth/entities/otp.entity';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private otpService: OTPService,
+  ) {}
 
   @Post('login')
   @ApiOperation({ summary: 'Login with email and password' })
@@ -129,5 +138,46 @@ export class AuthController {
   async register(@Body() dto: RegisterDto) {
     const data = await this.authService.register(dto);
     return successResponse(data, 'Register successfully', 201);
+  }
+
+  @Post('request-reset-password')
+  @ApiOperation({ summary: 'Request password reset OTP' })
+  @ApiBody({ type: RequestOTPDto })
+  @ApiOkResponse({
+    description: 'Password reset OTP sent successfully',
+    schema: {
+      properties: {
+        statusCode: { type: 'number', example: 200 },
+        message: { type: 'string', example: 'Password reset OTP sent successfully' },
+        data: { type: 'object', example: null },
+      },
+    },
+  })
+  @BadRequestResponse()
+  @HttpCode(HttpStatus.OK)
+  async requestResetPasswordOTP(@Body() dto: RequestOTPDto) {
+    await this.otpService.createAndSendOTP(dto.email, OTPType.RESET_PASSWORD);
+    return successResponse(null, 'Password reset OTP sent successfully');
+  }
+
+  @Post('reset-password')
+  @ApiOperation({ summary: 'Reset password with OTP' })
+  @ApiBody({ type: ResetPasswordDto })
+  @ApiOkResponse({
+    description: 'Password reset successfully',
+    schema: {
+      properties: {
+        statusCode: { type: 'number', example: 200 },
+        message: { type: 'string', example: 'Password reset successfully' },
+        data: { type: 'object', example: null },
+      },
+    },
+  })
+  @BadRequestResponse()
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    await this.otpService.verifyOTP(dto.email, dto.code, OTPType.RESET_PASSWORD);
+    await this.authService.resetPassword(dto.email, dto.newPassword);
+    return successResponse(null, 'Password reset successfully');
   }
 }

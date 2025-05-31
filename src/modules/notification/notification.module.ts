@@ -1,14 +1,20 @@
 import { Module } from '@nestjs/common';
-import { NotificationService } from './notification.service';
-import { NotificationController } from './notification.controller';
-import { NotificationCronService } from '../shared/utlis/notification-cron.service';
-import { TasksModule } from '../tasks/tasks.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Notification } from './entities/notification.entity';
+import { NotificationService } from '@modules/notification/services/notification.service';
+import { NotificationController } from '@modules/notification/controllers/notification.controller';
+import { NotificationCronService } from '@shared/utlis/notification-cron.service';
+import { TasksModule } from '@modules/tasks/tasks.module';
+import { Notification } from '@modules/notification/entities/notification.entity';
+import { FirebaseModule } from '@common/firebase/firebase.module';
 
 @Module({
-  imports: [TasksModule, TypeOrmModule.forFeature([Notification])],
+  imports: [
+    TasksModule,
+    TypeOrmModule.forFeature([Notification]),
+    FirebaseModule,
+  ],
   controllers: [NotificationController],
   providers: [NotificationService, NotificationCronService],
+  exports: [NotificationService],
 })
 export class NotificationModule {}

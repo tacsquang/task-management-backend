@@ -79,6 +79,12 @@ The Swagger UI provides:
 - Schema definitions
 - Response models
 
+Below are some screenshots of the API documentation interface:
+
+![Swagger UI Overview](docs/images/swagger-01.png)
+![API Endpoint Example](docs/images/swagger-02.png)
+![API Endpoint Example](docs/images/swagger-03.png)
+
 ## Environment Variables
 
 ```env

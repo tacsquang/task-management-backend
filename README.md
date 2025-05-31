@@ -4,6 +4,19 @@ Backend API for task management system built with NestJS.
 
 > ⚠️ **Development Status**: This project is currently under active development. Some features may be incomplete or subject to change. I'm working on improving stability and adding new features.
 
+## Table of Contents
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Docker](#docker)
+- [API Documentation](#api-documentation)
+- [Environment Variables](#environment-variables)
+- [Project Structure](#project-structure)
+- [Demo](#demo)
+- [Contributing](#contributing)
+
 ## Features
 
 - User authentication (JWT, Google OAuth)
@@ -12,6 +25,7 @@ Backend API for task management system built with NestJS.
 - Push notifications
 - Task filtering and status tracking
 - API Documentation with Swagger
+- Email verification with OTP using Mailjet
 
 ## Tech Stack
 
@@ -20,6 +34,7 @@ Backend API for task management system built with NestJS.
 - JWT & Google OAuth2
 - Firebase Cloud Messaging
 - Swagger/OpenAPI
+- Docker & Docker Compose (Basic)
 
 ## Getting Started
 
@@ -68,7 +83,7 @@ docker run -p 8080:8080 task-management-backend
 The API documentation is available through Swagger UI. After starting the server, you can access it at:
 
 ```
-http://localhost:8080/api-docs
+http://localhost:8080/api
 ```
 
 The Swagger UI provides:
@@ -88,7 +103,7 @@ Below are some screenshots of the API documentation interface:
 ## Environment Variables
 
 ```env
-# App
+# Application
 PORT=8080
 NODE_ENV=development
 
@@ -96,39 +111,59 @@ NODE_ENV=development
 DB_HOST=localhost
 DB_PORT=5432
 DB_USERNAME=postgres
-DB_PASSWORD=your_password
+DB_PASSWORD=postgres
 DB_NAME=task_management
 
 # JWT
-JWT_SECRET=your_jwt_secret
-JWT_EXPIRATION=1d
+JWT_SECRET=your-secret-key
+JWT_EXPIRES_IN=1d
 
-# Google OAuth
-GOOGLE_CLIENT_ID=your_client_id
-GOOGLE_CLIENT_SECRET=your_client_secret
+#OAuth2
+GOOGLE_CLIENT_ID=your-id-key
+GOOGLE_CLIENT_SECRET=your-secret-key
 GOOGLE_CALLBACK_URL=http://localhost:8080/auth/google/callback
+
+#MailJet
+MAILJET_API_KEY=your-api-key
+MAILJET_API_SECRET=your-secret-key
+MAIL_FROM=your-email
+
+#Firebase
+FIREBASE_API_KEY=your-api-key
+FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+FIREBASE_APP_ID=your-app-id
+FIREBASE_VAPID_KEY=your-vapid-key
 ```
 
 ## Project Structure
 
 ```
 src/
-├── modules/
-│   ├── auth/           # Authentication
-│   ├── users/          # User management
-│   ├── tasks/          # Task management
-│   ├── projects/       # Project management
-│   └── notification/   # Notifications
-├── shared/            # Shared utilities and middleware
-│   ├── swagger/       # Swagger configuration and decorators
-│   └── utils/         # Common utilities
-└── main.ts           # App entry point
+├── config/            # Configuration files
+├── common/           # Common utilities and interfaces
+├── modules/          # Feature modules
+│   ├── auth/        # Authentication
+│   ├── users/       # User management
+│   ├── tasks/       # Task management
+│   ├── projects/    # Project management
+│   └── notification/# Notifications
+├── shared/          # Shared utilities and middleware
+│   ├── swagger/     # Swagger configuration and decorators
+│   └── utils/       # Common utilities
+├── app.module.ts    # Root application module
+├── app.controller.ts# Root application controller
+├── app.service.ts   # Root application service
+└── main.ts         # Application entry point
+
+docs/               # Documentation and images
+firebase/           # Firebase configuration
+dist/              # Compiled output
 ```
 
 ## Upcoming Features
 - [ ] Admin Management
-- [ ] Validate account by Email
-- [ ] Docker Compose
 - [ ] Rate limiting
 - [ ] Caching
 
@@ -139,4 +174,12 @@ src/
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+## Demo
+
+### Live Demo
+- Backend API: [https://task-management-be.onrender.com](https://task-management-backend-9ilu.onrender.com)
+- API Documentation: [https://task-management-be.onrender.com/api](https://task-management-backend-9ilu.onrender.com/api)
+
+Note: This is a demo environment running on Render's free tier, which may have some limitations on performance and uptime.
 

@@ -189,4 +189,5 @@ docs/               # Documentation and images
 Note: This is a demo environment running on Render's free tier, which may have some limitations on performance and uptime.
 
 FCM demo:  
-![FCM Demo Placeholder](docs/images/fcm-demo-placeholder.png)
+![FCM Demo Placeholder](docs/images/fcm_01.png)
+![FCM Demo Placeholder](docs/images/fcm_02.png)

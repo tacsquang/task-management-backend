@@ -145,7 +145,7 @@ export class TasksController {
     name: 'status',
     required: false,
     example: 'todo',
-    description: 'Task status (all | todo | inprogress | done)',
+    description: 'Task status (all | todo | in_progress | done)',
   })
   @ApiOkResponse({
     description: 'Successfully filtered tasks by date and status',
@@ -174,7 +174,7 @@ export class TasksController {
     if (!date || !dayjs(date, 'YYYY-MM-DD', true).isValid()) {
       throw new BadRequestException('Invalid date parameter (format: YYYY-MM-DD)');
     }
-    const validStatuses = ['all', 'todo', 'inprogress', 'done'];
+    const validStatuses = ['all', 'todo', 'in_progress', 'done'];
     if (status && !validStatuses.includes(status)) {
       throw new BadRequestException('Invalid status');
     }

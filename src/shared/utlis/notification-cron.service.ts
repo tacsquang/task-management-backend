@@ -22,7 +22,9 @@ export class NotificationCronService {
     for (const task of tasks) {
         const token = await this.taskService.getUserDeviceToken(task.created_by);
 
+        // Convert to Vietnam timezone (UTC+7)
         const dueAtTime = new Date(task.due_at).toLocaleTimeString('vi-VN', {
+            timeZone: 'Asia/Ho_Chi_Minh',
             hour: '2-digit',
             minute: '2-digit',
             hour12: false,
@@ -47,7 +49,6 @@ export class NotificationCronService {
                 { taskId: task.id.toString() },
             );
         }
-
     }
 
     this.logger.log(`Checked and sent ${tasks.length} notifications`);

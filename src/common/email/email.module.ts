@@ -1,41 +1,32 @@
 import { Module } from '@nestjs/common';
-import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EmailService } from './email.service';
-import { join } from 'path';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { UsersModule } from '@modules/users/users.module';
+import * as nodemailer from 'nodemailer';
 
 @Module({
   imports: [
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        transport: {
+    ConfigModule,
+    UsersModule,
+  ],
+  providers: [
+    {
+      provide: 'MAILER_TRANSPORTER',
+      useFactory: (configService: ConfigService) => {
+        return nodemailer.createTransport({
           host: 'in-v3.mailjet.com',
           port: 587,
           secure: false,
           auth: {
-            user: config.get('MAILJET_API_KEY'),
-            pass: config.get('MAILJET_API_SECRET'),
+            user: configService.get('MAILJET_API_KEY'),
+            pass: configService.get('MAILJET_API_SECRET'),
           },
-        },
-        defaults: {
-          from: config.get('MAIL_FROM'),
-        },
-        template: {
-          dir: join(__dirname, 'templates'),
-          adapter: new HandlebarsAdapter(),
-          options: {
-            strict: true,
-          },
-        },
-      }),
-    }),
-    UsersModule,
+        });
+      },
+      inject: [ConfigService],
+    },
+    EmailService,
   ],
-  providers: [EmailService],
   exports: [EmailService],
 })
 export class EmailModule {} 

@@ -1,14 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, BadRequestException, Req } from '@nestjs/common';
 import { TasksService } from '@modules/tasks/services/tasks.service';
 import { CreateTaskDto } from '@modules/tasks/dto/create-task.dto';
 import { UpdateTaskDto } from '@modules/tasks/dto/update-task.dto';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Req } from '@nestjs/common';
 import { successResponse } from '@shared/utlis/response.utlis';
 import * as dayjs from 'dayjs';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { BadRequestResponse, ForbiddenResponse, NotFoundResponse } from '@shared/swagger/responses.swagger';
+import { PaginationDto } from '@shared/dto/pagination.dto';
 
 @UseGuards(AuthGuard('jwt'))
 @ApiBearerAuth()
@@ -31,25 +31,43 @@ export class TasksController {
         statusCode: { type: 'number', example: 200 },
         message: { type: 'string', example: 'Successfully retrieved tasks' },
         data: {
-          type: 'array',
-          example: [
-            {
-              id: 'task-id-1',
-              title: 'Task 1',
-              status: 'todo',
-              due_at: '2025-05-31T07:52:00+07:00',
-              project_id: '92abfa8e-b0ec-4976-ae09-30c1cbee3252',
+          type: 'object',
+          properties: {
+            tasks: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string', example: 'task-id-1' },
+                  title: { type: 'string', example: 'Task 1' },
+                  status: { type: 'string', example: 'todo' },
+                  due_at: { type: 'string', example: '2025-05-31T07:52:00+07:00' },
+                  project_id: { type: 'string', example: '92abfa8e-b0ec-4976-ae09-30c1cbee3252' },
+                },
+              },
             },
-          ],
+            pagination: {
+              type: 'object',
+              properties: {
+                total: { type: 'number', example: 100 },
+                page: { type: 'number', example: 1 },
+                limit: { type: 'number', example: 10 },
+                totalPages: { type: 'number', example: 10 },
+              },
+            },
+          },
         },
       },
     },
   })
   @NotFoundResponse()
   @ForbiddenResponse()
-  async getByProject(@Param('projectId') projectId: string) {
-    const tasks = await this.tasksService.getTasksByProject(projectId);
-    return successResponse(tasks, 'Successfully retrieved tasks');
+  async getByProject(
+    @Param('projectId') projectId: string,
+    @Query() pagination: PaginationDto,
+  ) {
+    const result = await this.tasksService.getTasksByProject(projectId, pagination);
+    return successResponse(result, 'Successfully retrieved tasks');
   }
 
   @Post()

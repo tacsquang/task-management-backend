@@ -273,18 +273,29 @@
 ### Get Task Groups
 - **Endpoint:** `GET /task-groups`
 - **Description:** Gets a list of task groups belonging to the current user
+- **Query Parameters:**
+  - `page` (Optional): Page number (starts from 1), default: 1
+  - `limit` (Optional): Number of items per page, default: 10
 - **Success Response (200 OK):**
   ```json
   {
     "statusCode": 200,
-    "message": "Task groups retrieved successfully",
-    "data": [
-      {
-        "id": "uuid",
-        "name": "Task Group 1",
-        "description": "Description 1"
+    "message": "Successfully retrieved task groups",
+    "data": {
+      "taskGroups": [
+        {
+          "id": "uuid",
+          "name": "Task Group 1",
+          "description": "Description 1"
+        }
+      ],
+      "pagination": {
+        "total": 100,
+        "page": 1,
+        "limit": 10,
+        "totalPages": 10
       }
-    ]
+    }
   }
   ```
 
@@ -402,21 +413,32 @@
 ### Get Projects by Task Group
 - **Endpoint:** `GET /projects/task-group/:taskGroupId`
 - **Description:** Gets a list of projects belonging to a specific task group
+- **Query Parameters:**
+  - `page` (Optional): Page number (starts from 1), default: 1
+  - `limit` (Optional): Number of items per page, default: 10
 - **Success Response (200 OK):**
   ```json
   {
     "statusCode": 200,
     "message": "Projects retrieved successfully",
-    "data": [
-      {
-        "id": "uuid",
-        "name": "Project 1",
-        "description": "Description 1",
-        "start_date": "2024-03-20",
-        "end_date": "2024-04-20",
-        "logo_image": "logo_url"
+    "data": {
+      "projects": [
+        {
+          "id": "uuid",
+          "name": "Project 1",
+          "description": "Description 1",
+          "start_date": "2024-03-20",
+          "end_date": "2024-04-20",
+          "logo_image": "logo_url"
+        }
+      ],
+      "pagination": {
+        "total": 100,
+        "page": 1,
+        "limit": 10,
+        "totalPages": 10
       }
-    ]
+    }
   }
   ```
 
@@ -427,25 +449,32 @@
 ### Get Tasks by Project
 - **Endpoint:** `GET /tasks/project/:projectId`
 - **Description:** Gets a list of tasks belonging to a specific project
+- **Query Parameters:**
+  - `page` (Optional): Page number (starts from 1), default: 1
+  - `limit` (Optional): Number of items per page, default: 10
 - **Success Response (200 OK):**
   ```json
   {
     "statusCode": 200,
     "message": "Tasks retrieved successfully",
-    "data": [
-      {
-        "id": "uuid",
-        "title": "Task Title",
-        "status": "todo",
-        "due_at": "2024-03-25T10:00:00Z",
-        "notify_enabled": true,
-        "notify_offset_minutes": 30,
-        "created_by_id": "user_uuid",
-        "created_by_name": "User Name",
-        "created_at": "2024-03-20T10:00:00Z",
-        "updated_at": "2024-03-20T10:00:00Z"
+    "data": {
+      "tasks": [
+        {
+          "id": "uuid",
+          "title": "Task Title",
+          "status": "todo",
+          "due_at": "2024-03-25T10:00:00Z",
+          "notify_enabled": true,
+          "notify_offset_minutes": 30,
+        }
+      ],
+      "pagination": {
+        "total": 100,
+        "page": 1,
+        "limit": 10,
+        "totalPages": 10
       }
-    ]
+    }
   }
   ```
 
@@ -473,10 +502,6 @@
       "due_at": "2024-03-25T10:00:00Z",
       "notify_enabled": true,
       "notify_offset_minutes": 30,
-      "created_by_id": "user_uuid",
-      "created_by_name": "User Name",
-      "created_at": "2024-03-20T10:00:00Z",
-      "updated_at": "2024-03-20T10:00:00Z"
     }
   }
   ```
@@ -504,10 +529,6 @@
       "due_at": "2024-03-26T10:00:00Z",
       "notify_enabled": true,
       "notify_offset_minutes": 30,
-      "created_by_id": "user_uuid",
-      "created_by_name": "User Name",
-      "created_at": "2024-03-20T10:00:00Z",
-      "updated_at": "2024-03-20T10:00:00Z"
     }
   }
   ```
@@ -530,25 +551,31 @@
 - **Query Parameters:**
   - `date` (Required): Date in YYYY-MM-DD format
   - `status` (Optional): One of 'all', 'todo', 'inprogress', 'done'
+  - `page` (Optional): Page number (starts from 1), default: 1
+  - `limit` (Optional): Number of items per page, default: 10
 - **Success Response (200 OK):**
   ```json
   {
     "statusCode": 200,
     "message": "Tasks filtered successfully",
-    "data": [
-      {
-        "id": "uuid",
-        "title": "Task Title",
-        "status": "todo",
-        "due_at": "2024-03-25T10:00:00Z",
-        "notify_enabled": true,
-        "notify_offset_minutes": 30,
-        "created_by_id": "user_uuid",
-        "created_by_name": "User Name",
-        "created_at": "2024-03-20T10:00:00Z",
-        "updated_at": "2024-03-20T10:00:00Z"
+    "data": {
+      "tasks": [
+        {
+          "id": "uuid",
+          "title": "Task Title",
+          "status": "todo",
+          "due_at": "2024-03-25T10:00:00Z",
+          "notify_enabled": true,
+          "notify_offset_minutes": 30,
+        }
+      ],
+      "pagination": {
+        "total": 100,
+        "page": 1,
+        "limit": 10,
+        "totalPages": 10
       }
-    ]
+    }
   }
   ```
 
@@ -559,6 +586,9 @@
 ### Get User Notifications
 - **Endpoint:** `GET /notifications`
 - **Description:** Gets a list of notifications for the current user
+- **Query Parameters:**
+  - `page` (Optional): Page number (starts from 1), default: 1
+  - `limit` (Optional): Number of items per page, default: 10
 - **Success Response (200 OK):**
   ```json
   {
@@ -575,7 +605,13 @@
           "sent_at": "2024-03-20T10:00:00Z",
           "task_id": "task_uuid"
         }
-      ]
+      ],
+      "pagination": {
+        "total": 100,
+        "page": 1,
+        "limit": 10,
+        "totalPages": 10
+      }
     }
   }
   ```

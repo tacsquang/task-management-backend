@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, NotFoundException, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, NotFoundException, ParseUUIDPipe, Query } from '@nestjs/common';
 import { NotificationService } from '@modules/notification/services/notification.service';
 import { AuthGuard } from '@nestjs/passport';
 import { successResponse } from '@shared/utlis/response.utlis';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation, } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { ForbiddenResponse, NotFoundResponse } from '@shared/swagger/responses.swagger';
+import { PaginationDto } from '@shared/dto/pagination.dto';
 
 @UseGuards(AuthGuard('jwt'))
 @ApiBearerAuth()
@@ -30,7 +31,7 @@ export class NotificationController {
                 properties: {
                   id: { type: 'string', example: 'notification_id_123' },
                   title: { type: 'string', example: 'You have a new task' },
-                  content: { type: 'string', example: 'Task ABC has been assigned to you' },
+                  message: { type: 'string', example: 'Task ABC has been assigned to you' },
                   is_read: { type: 'boolean', example: false },
                   created_at: { type: 'string', format: 'date-time', example: '2025-05-30T12:00:00.000Z' },
                   sent_at: { type: 'string', format: 'date-time', example: '2025-05-30T07:24:40.010Z'},
@@ -38,29 +39,40 @@ export class NotificationController {
                 },
               },
             },
+            pagination: {
+              type: 'object',
+              properties: {
+                total: { type: 'number', example: 100 },
+                page: { type: 'number', example: 1 },
+                limit: { type: 'number', example: 10 },
+                totalPages: { type: 'number', example: 10 },
+              },
+            },
           },
         },
       },
     },
   })
-  async getUserNotifications(@Req() req) {
-    const notifications = await this.notificationService.getUserNotifications(req.user.id);
-    return successResponse({ notifications }, 'Success');
+  async getUserNotifications(@Req() req, @Query() pagination: PaginationDto) {
+    const result = await this.notificationService.getUserNotifications(req.user.id, pagination);
+    return successResponse(result, 'Success');
   }
 
   @Patch(':id/read')
   @ApiOperation({ summary: 'Mark notification as read' })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    description: 'Notification ID',
+  })
   @ApiOkResponse({
-    description: 'Successfully marked as read',
+    description: 'Successfully marked notification as read',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 200 },
-        message: { type: 'string', example: 'Successfully marked as read' },
-        data: {
-          type: 'array',
-          example: [],
-        },
+        message: { type: 'string', example: 'Successfully marked notification as read' },
+        data: { type: 'object', example: null },
       },
     },
   })
@@ -71,6 +83,6 @@ export class NotificationController {
     @Req() req,
   ) {
     await this.notificationService.markAsRead(id, req.user.id);
-    return successResponse([], 'Successfully marked as read'); 
+    return successResponse(null, 'Successfully marked notification as read'); 
   }
 }

@@ -8,6 +8,7 @@ import { NotFoundException } from '@nestjs/common';
 import { ForbiddenException } from '@nestjs/common';
 import { TaskGroup } from '@modules/task-groups/entities/task-group.entity';
 import { ProjectDto } from '@modules/projects/dto/projects.dto';
+import { PaginationDto } from '@shared/dto/pagination.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -96,25 +97,38 @@ export class ProjectsService {
     return { message: 'Deleted successfully' };
   }
 
-  async getProjectsByTaskGroup(taskGroupId: string, userId: string): Promise<{ projects: ProjectDto[] }> {
+  async getProjectsByTaskGroup(taskGroupId: string, userId: string, pagination: PaginationDto) {
     const taskGroup = await this.taskGroupRepo.findOne({
       where: { id: taskGroupId },
       relations: ['createdBy'],
     });
-    
-    if (!taskGroup) throw new NotFoundException('Task group not found');
+
+    if (!taskGroup) {
+      throw new NotFoundException('Task group not found');
+    }
 
     if (taskGroup.createdBy.id !== userId) {
       throw new ForbiddenException('You do not have permission to view projects in this task group');
     }
 
-    const projects = await this.projectRepo.find({
+    const { page = 1, limit = 10 } = pagination;
+    const skip = (page - 1) * limit;
+
+    const [projects, total] = await this.projectRepo.findAndCount({
       where: { task_group: { id: taskGroupId } },
-      relations: ['created_by', 'task_group'],
+      order: { created_at: 'DESC' },
+      skip,
+      take: limit,
     });
 
     return {
-      projects: projects.map(p => new ProjectDto(p)),
+      projects: projects.map(project => new ProjectDto(project)),
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 }

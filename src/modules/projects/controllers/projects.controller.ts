@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Body, Req, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { ProjectsService } from '../services/projects.service';
 import { CreateProjectDto } from '../dto/create-project.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateProjectDto } from '../dto/update-project.dto';
 import { successResponse } from '@shared/utlis/response.utlis';
-import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { BadRequestResponse, ForbiddenResponse, NotFoundResponse } from '@shared/swagger/responses.swagger';
+import { PaginationDto } from '@shared/dto/pagination.dto';
 
 @UseGuards(AuthGuard('jwt'))
 @ApiBearerAuth()
@@ -113,6 +114,20 @@ export class ProjectsController {
     description: 'ID of the task group',
     example: '9e36a611-447b-4c97-9908-113e613cf2b3',
   })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (starts from 1)',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Number of items per page',
+    example: 10,
+  })
   @ApiOkResponse({
     description: 'Successfully retrieved projects by task group',
     schema: {
@@ -120,27 +135,33 @@ export class ProjectsController {
         statusCode: { type: 'number', example: 200 },
         message: { type: 'string', example: 'Successfully retrieved projects by task group' },
         data: {
-          type: 'array',
-          example: [
-            {
-              id: 'project-id-1',
-              name: 'Project Alpha',
-              description: 'Description of Project Alpha',
-              start_date: '2024-12-01T00:00:00.000Z',
-              end_date: '2025-01-01T00:00:00.000Z',
-              logo_image: 'https://example.com/logo1.png',
-              task_group_id: '9e36a611-447b-4c97-9908-113e613cf2b3',
+          type: 'object',
+          properties: {
+            projects: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string', example: 'project-id-1' },
+                  name: { type: 'string', example: 'Project Alpha' },
+                  description: { type: 'string', example: 'Description of Project Alpha' },
+                  start_date: { type: 'string', format: 'date-time', example: '2024-12-01T00:00:00.000Z' },
+                  end_date: { type: 'string', format: 'date-time', example: '2025-01-01T00:00:00.000Z' },
+                  logo_image: { type: 'string', example: 'https://example.com/logo1.png' },
+                  task_group_id: { type: 'string', example: '9e36a611-447b-4c97-9908-113e613cf2b3' },
+                },
+              },
             },
-            {
-              id: 'project-id-2',
-              name: 'Project Beta',
-              description: 'Description of Project Beta',
-              start_date: "",
-              end_date: "",
-              logo_image: "",
-              task_group_id: '9e36a611-447b-4c97-9908-113e613cf2b3',
+            pagination: {
+              type: 'object',
+              properties: {
+                total: { type: 'number', example: 100 },
+                page: { type: 'number', example: 1 },
+                limit: { type: 'number', example: 10 },
+                totalPages: { type: 'number', example: 10 },
+              },
             },
-          ],
+          },
         },
       },
     },
@@ -149,10 +170,11 @@ export class ProjectsController {
   @ForbiddenResponse()
   async getByTaskGroup(
     @Param('taskGroupId') taskGroupId: string,
+    @Query() pagination: PaginationDto,
     @Req() req,
   ) {
     const userId = req.user.id;
-    const data = await this.projectsService.getProjectsByTaskGroup(taskGroupId, userId);
+    const data = await this.projectsService.getProjectsByTaskGroup(taskGroupId, userId, pagination);
     return successResponse(data, 'Successfully retrieved projects by task group');
   }
 

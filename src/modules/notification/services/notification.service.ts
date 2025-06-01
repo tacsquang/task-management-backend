@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from '@modules/notification/entities/notification.entity';
 import { NotificationDto } from '@modules/notification/dto/notification.dto';
+import { PaginationDto } from '@shared/dto/pagination.dto';
 
 @Injectable()
 export class NotificationService {
@@ -81,14 +82,27 @@ export class NotificationService {
     }
   }
 
-  async getUserNotifications(userId: string): Promise<NotificationDto[]> {
-    const notifications = await this.notificationRepo.find({
+  async getUserNotifications(userId: string, pagination: PaginationDto) {
+    const { page = 1, limit = 10 } = pagination;
+    const skip = (page - 1) * limit;
+
+    const [notifications, total] = await this.notificationRepo.findAndCount({
       where: { user: { id: userId } },
-      order: { sent_at: 'DESC' },
       relations: ['task'],
+      order: { created_at: 'DESC' },
+      skip,
+      take: limit,
     });
 
-    return notifications.map(n => new NotificationDto(n));
+    return {
+      notifications: notifications.map(notification => new NotificationDto(notification)),
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async markAsRead(notificationId: string, userId: string): Promise<boolean> {

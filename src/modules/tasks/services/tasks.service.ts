@@ -9,6 +9,7 @@ import { User } from '@modules/users/entities/user.entity';
 import { NotFoundException } from '@nestjs/common';
 import { ForbiddenException } from '@nestjs/common';
 import { TaskDto } from '@modules/tasks/dto/task.dto';
+import { PaginationDto } from '@shared/dto/pagination.dto';
 
 @Injectable()
 export class TasksService {
@@ -79,15 +80,26 @@ export class TasksService {
     return new TaskDto (await this.taskRepo.remove(task));
   }
 
-  async getTasksByProject(projectId: string): Promise<{ tasks: TaskDto[] }> {
-    const tasks = await this.taskRepo.find({
+  async getTasksByProject(projectId: string, pagination: PaginationDto) {
+    const { page = 1, limit = 10 } = pagination;
+    const skip = (page - 1) * limit;
+
+    const [tasks, total] = await this.taskRepo.findAndCount({
       where: { project: { id: projectId } },
       order: { created_at: 'DESC' },
-      relations: ['created_by'], 
+      relations: ['created_by'],
+      skip,
+      take: limit,
     });
 
     return {
       tasks: tasks.map(task => new TaskDto(task)),
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 

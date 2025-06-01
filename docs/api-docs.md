@@ -53,6 +53,20 @@
   }
   ```
 
+### Logout
+- **Endpoint:** `POST /auth/logout`
+- **Description:** Logs out the current user
+- **Headers:**
+  - `Authorization: Bearer <token>` (Required)
+- **Success Response (200 OK):**
+  ```json
+  {
+    "statusCode": 200,
+    "message": "Logout successfully",
+    "data": null
+  }
+  ```
+
 ### Register
 - **Endpoint:** `POST /auth/register`
 - **Description:** Registers a new user

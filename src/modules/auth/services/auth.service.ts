@@ -1,14 +1,15 @@
 // src/auth/auth.service.ts
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, LessThan } from 'typeorm';
 import { User } from '@modules/users/entities/user.entity';
 import { UsersService } from '@modules/users/services/users.service';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto } from '../dto/register.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { ForbiddenException } from '@nestjs/common';
+import { BlacklistedToken } from '../entities/blacklisted-token.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +18,9 @@ export class AuthService {
     private jwtService: JwtService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(BlacklistedToken)
+    private blacklistedTokenRepo: Repository<BlacklistedToken>,
+    private configService: ConfigService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -93,5 +97,36 @@ export class AuthService {
     
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await this.userRepository.update(user.id, { password: hashedPassword });
+  }
+
+  async logout(token: string, userId: string) {
+    // Get token expiration from JWT payload
+    const decoded = this.jwtService.decode(token);
+    const expiresAt = new Date(decoded['exp'] * 1000); // Convert to milliseconds
+
+    // Add token to blacklist
+    const blacklistedToken = this.blacklistedTokenRepo.create({
+      token,
+      userId,
+      expiresAt,
+    });
+    await this.blacklistedTokenRepo.save(blacklistedToken);
+
+    // Clean up expired tokens
+    await this.cleanupExpiredTokens();
+  }
+
+  async isTokenBlacklisted(token: string): Promise<boolean> {
+    const blacklistedToken = await this.blacklistedTokenRepo.findOne({
+      where: { token },
+    });
+    return !!blacklistedToken;
+  }
+
+  private async cleanupExpiredTokens() {
+    const now = new Date();
+    await this.blacklistedTokenRepo.delete({
+      expiresAt: LessThan(now),
+    });
   }
 }

@@ -21,6 +21,7 @@ import {
   ApiResponse,
   ApiOkResponse,
   ApiCreatedResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { BadRequestResponse, UnauthorizedResponse } from '../../../shared/swagger/responses.swagger';
 import { OTPService } from '../services/otp.service';
@@ -174,5 +175,29 @@ export class AuthController {
     await this.otpService.verifyOTP(dto.email, dto.code, OTPType.RESET_PASSWORD);
     await this.authService.resetPassword(dto.email, dto.newPassword);
     return successResponse(null, 'Password reset successfully');
+  }
+
+  @Post('logout')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Logout user' })
+  @ApiOkResponse({
+    description: 'Logout successfully',
+    schema: {
+      properties: {
+        statusCode: { type: 'number', example: 200 },
+        message: { type: 'string', example: 'Logout successfully' },
+        data: { type: 'object', example: null },
+      },
+    },
+  })
+  @HttpCode(HttpStatus.OK)
+  async logout(@Req() req) {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      throw new UnauthorizedException('No token provided');
+    }
+    await this.authService.logout(token, req.user.id);
+    return successResponse(null, 'Logout successfully');
   }
 }

@@ -5,6 +5,7 @@ import { AuthService } from './services/auth.service';
 import { AuthController } from './controllers/auth.controller';
 import { User } from '@modules/users/entities/user.entity';
 import { OTP } from './entities/otp.entity';
+import { BlacklistedToken } from './entities/blacklisted-token.entity';
 import { OTPService } from './services/otp.service';
 import { OTPController } from './controllers/otp.controller';
 import { EmailModule } from '@common/email/email.module';
@@ -16,7 +17,7 @@ import { GoogleStrategy } from './strategy/google.strategy';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, OTP]),
+    TypeOrmModule.forFeature([User, OTP, BlacklistedToken]),
     EmailModule,
     UsersModule,
     JwtModule.registerAsync({

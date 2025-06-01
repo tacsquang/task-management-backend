@@ -32,11 +32,20 @@ COPY --from=builder /app/dist ./dist
 # Copy Firebase files
 COPY firebase ./public/firebase
 
+# Copy index.html and Firebase files to root
+COPY firebase/index.html ./
+COPY firebase/firebase-config.js ./
+COPY firebase/firebase-messaging-sw.js ./
+
+# Copy and set up the environment replacement script
+COPY replace-env.sh ./
+RUN chmod +x /app/replace-env.sh
+
 # Set environment variables
 ENV NODE_ENV=production
 
 # Expose port
 EXPOSE 3000
 
-# Start application
-CMD ["npm", "run", "start:prod"]
+# Start application with environment variable replacement
+CMD ["/bin/sh", "-c", "/app/replace-env.sh && npm run start:prod"]

@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import { Request, Response, NextFunction } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -29,7 +30,19 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   // Cấu hình phục vụ file tĩnh
-  app.useStaticAssets(join(__dirname, '..', 'public'));
+  app.useStaticAssets(join(process.cwd(), 'public'));
+  
+  // Cấu hình phục vụ file từ thư mục gốc
+  app.useStaticAssets(process.cwd());
+  
+  // Cấu hình route mặc định để phục vụ index.html
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.path === '/') {
+      res.sendFile(join(process.cwd(), 'index.html'));
+    } else {
+      next();
+    }
+  });
 
   await app.listen(process.env.PORT || 8080);
 }

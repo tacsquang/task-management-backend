@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: task-management-api
+    container_name: task-management-api2
     restart: always
     ports:
       - "8080:8080"
@@ -25,7 +25,7 @@ services:
 
   postgres:
     image: postgres:15-alpine
-    container_name: task-management-db
+    container_name: task-management-db2
     restart: always
     ports:
       - "5432:5432"

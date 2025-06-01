@@ -77,6 +77,13 @@ docker build -t task-management-backend .
 # Run
 docker run -p 8080:8080 task-management-backend
 ```
+### Docker Compose
+
+```bash
+# Start all services (including database)
+docker compose up --build
+```
+---
 
 ## API Documentation
 
@@ -158,8 +165,6 @@ src/
 └── main.ts         # Application entry point
 
 docs/               # Documentation and images
-firebase/           # Firebase configuration
-dist/              # Compiled output
 ```
 
 ## Upcoming Features
@@ -183,3 +188,5 @@ dist/              # Compiled output
 
 Note: This is a demo environment running on Render's free tier, which may have some limitations on performance and uptime.
 
+FCM demo:  
+![FCM Demo Placeholder](docs/images/fcm-demo-placeholder.png)

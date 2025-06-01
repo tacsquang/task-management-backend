@@ -1,4 +1,3 @@
-// src/auth/auth.controller.ts
 import {
   Controller,
   Post,
@@ -21,15 +20,11 @@ import {
   ApiBody,
   ApiResponse,
   ApiOkResponse,
-  ApiUnauthorizedResponse,
-  ApiExcludeEndpoint,
   ApiCreatedResponse,
-  ApiBadRequestResponse,
 } from '@nestjs/swagger';
-import { messaging } from 'firebase-admin';
 import { BadRequestResponse, UnauthorizedResponse } from '../../../shared/swagger/responses.swagger';
 import { OTPService } from '../services/otp.service';
-import { RequestOTPDto, VerifyOTPDto, ResetPasswordDto } from '../dto/otp.dto';
+import { RequestOTPDto, ResetPasswordDto } from '../dto/otp.dto';
 import { OTPType } from '../entities/otp.entity';
 
 @ApiTags('Auth')

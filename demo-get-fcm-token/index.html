@@ -5,6 +5,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"></script>
   <script src="/firebase-config.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -42,6 +43,20 @@
     button:hover {
       background: #45a049;
     }
+    .api-link {
+      margin: 20px 0;
+    }
+    .api-link a {
+      color: #4CAF50;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .api-link a:hover {
+      text-decoration: underline;
+    }
+    .api-link i {
+      margin-right: 5px;
+    }
   </style>
 </head>
 <body>
@@ -55,12 +70,16 @@
         <li>Khi trình duyệt hỏi, chọn "Allow" để cho phép thông báo</li>
         <li>Nếu đã chọn "Block" trước đó:
           <ul>
-            <li>Chrome: Click vào biểu tượng 🔒 hoặc ⓘ bên trái thanh địa chỉ -> Site settings -> Notifications -> Allow</li>
-            <li>Firefox: Click vào biểu tượng 🔒 bên trái thanh địa chỉ -> Permissions -> Notifications -> Allow</li>
-            <li>Edge: Click vào biểu tượng 🔒 bên trái thanh địa chỉ -> Site permissions -> Notifications -> Allow</li>
+            <li>Chrome: Click vào biểu tượng <i class="fas fa-lock"></i> hoặc <i class="fas fa-info-circle"></i> bên trái thanh địa chỉ -> Site settings -> Notifications -> Allow</li>
+            <li>Firefox: Click vào biểu tượng <i class="fas fa-lock"></i> bên trái thanh địa chỉ -> Permissions -> Notifications -> Allow</li>
+            <li>Edge: Click vào biểu tượng <i class="fas fa-lock"></i> bên trái thanh địa chỉ -> Site permissions -> Notifications -> Allow</li>
           </ul>
         </li>
       </ol>
+    </div>
+
+    <div class="api-link">
+      <a href="/api"><i class="fas fa-book"></i> Xem API Documentation (Swagger UI)</a>
     </div>
 
     <button id="getTokenBtn">Get Token</button>

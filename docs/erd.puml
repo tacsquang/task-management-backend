@@ -5,77 +5,91 @@ skinparam classAttributeIconSize 0
 title Task Management Database Schema
 
 entity "users" as users {
-  +id : SERIAL [PK]
+  +id : UUID [PK]
   --
   name : TEXT
   email : TEXT [UNIQUE]
   password : TEXT
+  avatar : TEXT
+  is_active : BOOLEAN
+  role : VARCHAR(20)
+  provider : VARCHAR(20)
+  device_fcm_token : TEXT
   created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "task_groups" as task_groups {
+  +id : UUID [PK]
+  --
+  name : TEXT
+  description : TEXT
+  created_by : UUID [FK → users.id]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
 }
 
 entity "projects" as projects {
-  +id : SERIAL [PK]
+  +id : UUID [PK]
   --
   name : TEXT
   description : TEXT
   start_date : DATE
   end_date : DATE
-  created_by : INTEGER [FK → users.id]
+  logo_image : TEXT
+  task_group_id : UUID [FK → task_groups.id]
+  created_by : UUID [FK → users.id]
   created_at : TIMESTAMP
-}
-
-entity "project_members" as project_members {
-  +id : SERIAL [PK]
-  --
-  project_id : INTEGER [FK → projects.id]
-  user_id : INTEGER [FK → users.id]
-  role : VARCHAR(20)
-  joined_at : TIMESTAMP
-  UNIQUE (project_id, user_id)
+  updated_at : TIMESTAMP
 }
 
 entity "tasks" as tasks {
-  +id : SERIAL [PK]
+  +id : UUID [PK]
   --
-  project_id : INTEGER [FK → projects.id]
   title : TEXT
-  description : TEXT
   status : VARCHAR(20)
-  due_date : DATE
-  created_by : INTEGER [FK → users.id]
+  due_at : TIMESTAMP
+  notify_enabled : BOOLEAN
+  notify_offset_minutes : INTEGER
+  project_id : UUID [FK → projects.id]
+  created_by : UUID [FK → users.id]
   created_at : TIMESTAMP
+  updated_at : TIMESTAMP
 }
 
-entity "task_assignees" as task_assignees {
-  +id : SERIAL [PK]
+entity "notifications" as notifications {
+  +id : UUID [PK]
   --
-  task_id : INTEGER [FK → tasks.id]
-  user_id : INTEGER [FK → users.id]
-  assigned_at : TIMESTAMP
-  UNIQUE (task_id, user_id)
+  title : TEXT
+  message : TEXT
+  is_read : BOOLEAN
+  user_id : UUID [FK → users.id]
+  task_id : UUID [FK → tasks.id]
+  created_at : TIMESTAMP
+  sent_at : TIMESTAMP
 }
 
-entity "checklists" as checklists {
-  +id : SERIAL [PK]
+entity "otps" as otps {
+  +id : UUID [PK]
   --
-  task_id : INTEGER [FK → tasks.id]
-  content : TEXT
-  is_completed : BOOLEAN
-  created_by : INTEGER [FK → users.id]
+  email : TEXT
+  code : TEXT
+  type : VARCHAR(20)
+  user_id : UUID [FK → users.id, NULL]
+  expires_at : TIMESTAMP
   created_at : TIMESTAMP
 }
 
 ' Relationships
-users ||--o{ projects : "created_by"
-projects ||--o{ project_members : "project_id"
-users ||--o{ project_members : "user_id"
+users ||--o{ task_groups : "creates"
+users ||--o{ projects : "creates"
+users ||--o{ tasks : "creates"
+users ||--o{ notifications : "receives"
+users ||--o{ otps : "has"
 
-projects ||--o{ tasks : "project_id"
-users ||--o{ tasks : "created_by"
+task_groups ||--o{ projects : "contains"
 
-tasks ||--o{ task_assignees : "task_id"
-users ||--o{ task_assignees : "user_id"
+projects ||--o{ tasks : "contains"
+tasks ||--o{ notifications : "triggers"
 
-tasks ||--o{ checklists : "task_id"
-users ||--o{ checklists : "created_by"
 @enduml

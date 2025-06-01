@@ -29,13 +29,10 @@ RUN npm ci --only=production
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
 
-# Copy Firebase files
-COPY firebase ./public/firebase
-
-# Copy index.html and Firebase files to root
-COPY firebase/index.html ./
-COPY firebase/firebase-config.js ./
-COPY firebase/firebase-messaging-sw.js ./
+# Copy demo files to root
+COPY demo-get-fcm-token/index.html ./
+COPY demo-get-fcm-token/firebase-config.js ./
+COPY demo-get-fcm-token/firebase-messaging-sw.js ./
 
 # Copy and set up the environment replacement script
 COPY replace-env.sh ./
@@ -45,7 +42,7 @@ RUN chmod +x /app/replace-env.sh
 ENV NODE_ENV=production
 
 # Expose port
-EXPOSE 3000
+EXPOSE 8080
 
 # Start application with environment variable replacement
 CMD ["/bin/sh", "-c", "/app/replace-env.sh && npm run start:prod"]

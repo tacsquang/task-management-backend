@@ -40,8 +40,7 @@
     "statusCode": 200,
     "message": "Login successfully!",
     "data": {
-      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
     }
   }
   ```
@@ -71,11 +70,7 @@
     "statusCode": 201,
     "message": "Register successfully",
     "data": {
-      "id": "uuid",
-      "email": "newuser@example.com",
-      "name": "New User",
-      "is_active": true,
-      "avatar": ""
+      "id": "uuid"
     }
   }
   ```
@@ -101,8 +96,81 @@
     "statusCode": 200,
     "message": "Login successfully!",
     "data": {
-      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
     }
+  }
+  ```
+
+### OTP Verification
+- **Endpoint:** `POST /auth/otp/request-verification`
+- **Description:** Requests a verification OTP
+- **Request Body:**
+  ```json
+  {
+    "email": "user@example.com"
+  }
+  ```
+- **Success Response (200 OK):**
+  ```json
+  {
+    "statusCode": 200,
+    "message": "Verification OTP sent successfully",
+    "data": null
+  }
+  ```
+
+- **Endpoint:** `POST /auth/otp/verify`
+- **Description:** Verifies an OTP code
+- **Request Body:**
+  ```json
+  {
+    "email": "user@example.com",
+    "code": "123456"
+  }
+  ```
+- **Success Response (200 OK):**
+  ```json
+  {
+    "statusCode": 200,
+    "message": "OTP verified successfully",
+    "data": null
+  }
+  ```
+
+### Password Reset
+- **Endpoint:** `POST /auth/request-reset-password`
+- **Description:** Requests a password reset OTP
+- **Request Body:**
+  ```json
+  {
+    "email": "user@example.com"
+  }
+  ```
+- **Success Response (200 OK):**
+  ```json
+  {
+    "statusCode": 200,
+    "message": "Password reset OTP sent successfully",
+    "data": null
+  }
+  ```
+
+- **Endpoint:** `POST /auth/reset-password`
+- **Description:** Resets password using OTP
+- **Request Body:**
+  ```json
+  {
+    "email": "user@example.com",
+    "code": "123456",
+    "newPassword": "newpassword123"
+  }
+  ```
+- **Success Response (200 OK):**
+  ```json
+  {
+    "statusCode": 200,
+    "message": "Password reset successfully",
+    "data": null
   }
   ```
 
@@ -123,16 +191,10 @@
       "email": "user@example.com",
       "name": "User Name",
       "is_active": true,
-      "avatar": "avatar_url"
+      "avatar": "avatar_url",
+      "role": "user",
+      "provider": "local"
     }
-  }
-  ```
-- **Error Response (401 Unauthorized):**
-  ```json
-  {
-    "statusCode": 401,
-    "message": "Unauthorized",
-    "error": "Unauthorized"
   }
   ```
 
@@ -156,7 +218,9 @@
       "email": "user@example.com",
       "name": "Updated Name",
       "is_active": true,
-      "avatar": "new_avatar_url"
+      "avatar": "new_avatar_url",
+      "role": "user",
+      "provider": "local"
     }
   }
   ```
@@ -219,11 +283,6 @@
         "id": "uuid",
         "name": "Task Group 1",
         "description": "Description 1"
-      },
-      {
-        "id": "uuid",
-        "name": "Task Group 2",
-        "description": "Description 2"
       }
     ]
   }
@@ -492,43 +551,10 @@
     ]
   }
   ```
-- **Error Response (400 Bad Request):**
-  ```json
-  {
-    "statusCode": 400,
-    "message": "Invalid date parameter (format: YYYY-MM-DD)",
-    "error": "Bad Request"
-  }
-  ```
 
 ## Notification Module (`/notifications`)
 
-*Note: Most endpoints in this module require JWT authentication.*
-
-### Send Notification
-- **Endpoint:** `POST /notifications/send`
-- **Description:** Sends a push notification
-- **Request Body:**
-  ```json
-  {
-    "token": "fcm_token",
-    "title": "Notification Title",
-    "message": "Notification Message",
-    "data": {
-      "key": "value"
-    }
-  }
-  ```
-- **Success Response (200 OK):**
-  ```json
-  {
-    "statusCode": 200,
-    "message": "Notification sent successfully",
-    "data": {
-      "messageId": "notification_id"
-    }
-  }
-  ```
+*Note: All endpoints in this module require JWT authentication.*
 
 ### Get User Notifications
 - **Endpoint:** `GET /notifications`
